@@ -1,0 +1,8 @@
+// app global css in SCSS form
+// src/css/app.scss
+@import 'quasar/src/css/index.sass';
+
+body {
+  background: #f5f5f5;
+  font-family: 'Noto Sans SC', sans-serif;
+}
