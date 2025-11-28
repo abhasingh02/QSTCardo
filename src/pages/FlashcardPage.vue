@@ -161,7 +161,7 @@
                 <div class="text-center q-mb-sm text-accent">
                   {{ isChinese ? active.pinyin : '' }}
                 </div>
-                <div class="row items-center justify-center">
+                <div class="row items-center justify-between no-wrap">
                   <q-btn
                     size="xl"
                     flat
@@ -890,17 +890,6 @@ function nextCard() {
 }
 </script>
 <style scoped>
-/* full height slide */
-.view-full {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-
-  /* Removes scroll */
-  overflow: hidden;
-}
-
 /* navigation buttons */
 .nav-buttons {
   margin-bottom: 20px;
@@ -911,14 +900,14 @@ function nextCard() {
 
 /* Reduce flashcard height for mobile */
 .flashcard {
-  width: 30vh;
-  max-width: 2500px;
-  height: 400px; /* ↓ smaller so it fits screen */
+  width: 100%;
+  max-width: 300px;
+  height: 350px; /* ↓ smaller so it fits screen */
+  max-height: 400px;
   perspective: 1000px;
   margin: auto;
 }
 
-/* inner flip card */
 .card-inner {
   width: 100%;
   height: 100%;
