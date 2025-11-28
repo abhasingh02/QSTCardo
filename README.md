@@ -1,4 +1,4 @@
-# to learn mandarin (mandarin-master)
+## qstcardo
 
 Created by Abha singh (abhasingh.02@gmail.com)
 
@@ -42,6 +42,19 @@ quasar build
 
 ```bash
 quasar build -m electron
+```
+
+### build cardova apk
+
+```bash
+cordova build android --release
+```
+
+### instll on mobile in F:\Learning\QSTCardo\src-cordova\platforms\android\app\build\outputs\apk\debug>
+
+```bash
+adb install -r "F:\Learning\QSTCardo\src-cordova\platforms\android\app\build\outputs\apk\debug\app-debug.apk"
+
 ```
 
 ### Customize the configuration
