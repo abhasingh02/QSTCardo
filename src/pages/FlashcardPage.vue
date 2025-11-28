@@ -136,23 +136,31 @@
                   <q-btn color="primary" outline label="Next ⟩" @click="nextCard" />
                   <div class="text-caption">{{ activeIndex + 1 }} / {{ flashcards.length }}</div>
                 </div>
-
-                <!-- TITLE / INFO -->
                 <div class="text-center q-mb-sm">
-                  <q-btn
+                  <q-btn-dropdown
+                    size="sm"
                     color="primary"
-                    icon="volume_up"
-                    class="q-ma-sm"
-                    flat
-                    @click="speakCharacter"
-                  />
-
-                  <div class="text-bold text-red">
-                    {{ flipped ? 'Back side' : 'Front side' }}
-                  </div>
+                    label="Language"
+                    icon="language"
+                    bordered
+                  >
+                    <q-list>
+                      <q-item
+                        v-for="lang in languageList"
+                        :key="lang.code"
+                        clickable
+                        v-close-popup
+                        @click="selectLanguage(lang)"
+                      >
+                        <q-item-section>{{ lang.name }}</q-item-section>
+                      </q-item>
+                    </q-list>
+                  </q-btn-dropdown>
+                  <q-btn color="primary" icon="volume_up" flat @click="speakCharacter" />
                 </div>
-
-                <!-- CARD + NAV -->
+                <div class="text-center q-mb-sm text-accent">
+                  {{ isChinese ? active.pinyin : '' }}
+                </div>
                 <div class="row items-center justify-center">
                   <q-btn
                     size="xl"
@@ -372,7 +380,11 @@ const store = useCharacterStore()
 const router = useRouter()
 const route = useRoute()
 const $q = useQuasar()
-
+const languageList = store.languageList
+const selectedLanguage = ref(null)
+const isChinese = computed(() => {
+  return selectedLanguage.value?.name === 'Chinese'
+})
 const STORAGE_KEY = 'flashcards.v1'
 const selectAll = ref(false)
 const excelFileInput = ref(null)
@@ -616,9 +628,12 @@ function loadFromStorage() {
     return []
   }
 }
+const selectLanguage = (lang) => {
+  selectedLanguage.value = lang
+}
 const speakCharacter = () => {
   const utterance = new SpeechSynthesisUtterance(active.value.frontText)
-  utterance.lang = 'zh-CN'
+  utterance.lang = selectedLanguage.value?.tts || 'en-US'
   utterance.pitch = 1
   utterance.rate = 0.5
   speechSynthesis.speak(utterance)
