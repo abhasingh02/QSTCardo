@@ -901,7 +901,7 @@ function nextCard() {
 /* Reduce flashcard height for mobile */
 .flashcard {
   width: 100%;
-  max-width: 300px;
+  max-width: 250px;
   height: 350px; /* ↓ smaller so it fits screen */
   max-height: 400px;
   perspective: 1000px;
