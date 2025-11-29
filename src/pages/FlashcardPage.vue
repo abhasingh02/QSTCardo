@@ -234,7 +234,6 @@
                         @click="toggleSelectAll"
                       />
                     </div>
-                    <div v-if="selectAll" class="text-italic">----All cards selected----</div>
                     <div>
                       <q-btn
                         size="sm"
@@ -594,6 +593,25 @@ watch(selectedIds, () => {
     selectAll.value = true
   } else {
     selectAll.value = false
+  }
+})
+
+watch(selectAll, (val) => {
+  console.log('selectAll changed', val)
+  if (val) {
+    $q.notify({
+      type: 'warning',
+      message: 'All cards selected',
+      position: 'top',
+      timeout: 0, // stays until user clicks OK
+      actions: [
+        {
+          label: 'OK',
+          color: 'white',
+          handler: () => {},
+        },
+      ],
+    })
   }
 })
 
