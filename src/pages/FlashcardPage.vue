@@ -163,7 +163,7 @@
                 </div>
                 <div class="row items-center justify-between no-wrap">
                   <q-btn
-                    size="xl"
+                    size="xs"
                     flat
                     icon="arrow_left"
                     color="accent"
@@ -202,7 +202,7 @@
                   </div>
 
                   <q-btn
-                    size="xl"
+                    size="xs"
                     color="accent"
                     flat
                     icon="arrow_right"
