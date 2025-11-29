@@ -81,7 +81,7 @@ const showPassword = ref(false)
 // AES Secret Key
 const SECRET_KEY = 'SUPER_SECRET_KEY_12345'
 
-// AES Encryption
+// AES Methods
 function encrypt(data) {
   return CryptoJS.AES.encrypt(JSON.stringify(data), SECRET_KEY).toString()
 }
@@ -89,18 +89,16 @@ function decrypt(cipher) {
   try {
     const bytes = CryptoJS.AES.decrypt(cipher, SECRET_KEY)
     return JSON.parse(bytes.toString(CryptoJS.enc.Utf8))
-  } catch (e) {
-    console.log('e', e)
-
+  } catch {
     return null
   }
 }
 
-// GOOGLE CLIENT ID
+// Google Login
 const GOOGLE_CLIENT_ID = 'YOUR_CLIENT_ID_HERE.apps.googleusercontent.com'
 
 onMounted(() => {
-  logout()
+  autoLogin()
   const wait = setInterval(() => {
     if (window.googleReady && window.google) {
       clearInterval(wait)
@@ -108,6 +106,16 @@ onMounted(() => {
     }
   }, 200)
 })
+
+function autoLogin() {
+  const saved = localStorage.getItem('user')
+  const fingerEnabled = localStorage.getItem('fingerEnabled') === 'true'
+  if (saved && fingerEnabled) {
+    setTimeout(() => {
+      handleBiometricAutoLogin()
+    }, 500)
+  }
+}
 
 function initGoogle() {
   window.google.accounts.id.initialize({
@@ -128,7 +136,7 @@ function handleGoogleSignup() {
 
 function handleGoogleResponse(response) {
   const idToken = response.credential
-  const payload = JSON.parse(atob(idToken.split('.')[1])) // decode JWT payload
+  const payload = JSON.parse(atob(idToken.split('.')[1]))
 
   let usersDb = JSON.parse(localStorage.getItem('usersDb') || '[]')
   const exists = usersDb.find((u) => u.email === payload.email)
@@ -141,20 +149,13 @@ function handleGoogleResponse(response) {
       picture: payload.picture,
     })
     localStorage.setItem('usersDb', JSON.stringify(usersDb))
-
-    $q.notify({
-      type: 'positive',
-      message: `Account created for ${payload.name}`,
-    })
+    $q.notify({ type: 'positive', message: `Account created for ${payload.name}` })
   } else {
-    $q.notify({
-      type: 'positive',
-      message: `Welcome back ${exists.email}`,
-    })
+    $q.notify({ type: 'positive', message: `Welcome back ${exists.email}` })
   }
 
-  // Save logged-in session
   localStorage.setItem('user', encrypt({ email: payload.email }))
+  localStorage.setItem('fingerEnabled', 'true') // auto-enable fingerprint
   router.push('/home')
 }
 
@@ -167,10 +168,7 @@ function handleSignup() {
   let usersDb = JSON.parse(localStorage.getItem('usersDb') || '[]')
 
   if (usersDb.find((u) => u.email === email.value)) {
-    $q.notify({
-      type: 'negative',
-      message: 'Email already exists',
-    })
+    $q.notify({ type: 'negative', message: 'Email already exists' })
     return
   }
 
@@ -184,6 +182,7 @@ function handleSignup() {
   $q.notify({ type: 'positive', message: 'Signup successful!' })
 
   localStorage.setItem('user', encrypt({ email: email.value }))
+  localStorage.setItem('fingerEnabled', 'true') // enable fingerprint automatically
   router.push('/home')
 }
 
@@ -195,26 +194,21 @@ function handleEmailLogin() {
   const exists = usersDb.find((u) => u.email === email.value)
 
   if (!exists) {
-    $q.notify({
-      type: 'negative',
-      message: 'No account found',
-    })
+    $q.notify({ type: 'negative', message: 'No account found' })
     return
   }
 
   if (exists.password) {
     const decryptedPass = decrypt(exists.password)
     if (decryptedPass !== password.value) {
-      $q.notify({
-        type: 'negative',
-        message: 'Incorrect password',
-      })
+      $q.notify({ type: 'negative', message: 'Incorrect password' })
       return
     }
   }
 
   $q.notify({ type: 'positive', message: 'Login successful!' })
   localStorage.setItem('user', encrypt({ email: email.value }))
+  localStorage.set
   router.push('/home')
 }
 
@@ -222,10 +216,11 @@ function handleEmailLogin() {
 // FINGERPRINT LOGIN
 // ----------------------------
 async function handleBiometricLogin() {
-  if (!window.Fingerprint || !window.Fingerprint.isAvailable) {
+  const saved = localStorage.getItem('user')
+  if (!saved) {
     $q.notify({
       type: 'negative',
-      message: 'Biometric not available',
+      message: 'Login with Email/Google once before using Fingerprint',
     })
     return
   }
@@ -240,40 +235,31 @@ async function handleBiometricLogin() {
       disableBackup: true,
     })
 
-    const saved = localStorage.getItem('user')
-    if (!saved) {
-      $q.notify({
-        type: 'negative',
-        message: 'Login with Email/Google once before using Fingerprint',
-      })
-      return
-    }
-
     router.push('/home')
     $q.notify({ type: 'positive', message: 'Logged in with fingerprint!' })
-  } catch (err) {
-    console.log('err', err)
-
-    $q.notify({
-      type: 'negative',
-      message: 'Authentication failed',
-    })
+  } catch {
+    $q.notify({ type: 'negative', message: 'Authentication failed' })
   }
 }
 
-function logout() {
-  localStorage.removeItem('user')
+// ----------------------------
+// AUTO FINGERPRINT LOGIN
+// ----------------------------
+async function handleBiometricAutoLogin() {
+  try {
+    await Fingerprint.isAvailable()
 
-  // Optional: also clear usersDb? (NO – don’t delete signup database)
-  // localStorage.removeItem("usersDb")
+    await Fingerprint.show({
+      title: 'Welcome Back!',
+      subtitle: 'Fingerprint Required',
+      description: 'Authenticate to continue',
+      disableBackup: true,
+    })
 
-  $q.notify({
-    type: 'positive',
-    message: 'Logged out successfully!',
-  })
-
-  // Redirect to login page
-  router.push('/login')
+    router.push('/home')
+  } catch {
+    $q.notify({ type: 'warning', message: 'Fingerprint required to continue' })
+  }
 }
 </script>
 

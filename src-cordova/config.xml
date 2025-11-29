@@ -9,4 +9,16 @@
     <allow-intent href="http://*/*" />
     <allow-intent href="https://*/*" />
     <allow-navigation href="about:*" />
+    <platform name="android">
+        <icon density="ldpi" src="res/icon/android/icon.png" />
+        <icon density="mdpi" src="res/icon/android/icon.png" />
+        <icon density="hdpi" src="res/icon/android/icon.png" />
+        <icon density="xhdpi" src="res/icon/android/icon.png" />
+        <icon density="xxhdpi" src="res/icon/android/icon.png" />
+        <icon density="xxxhdpi" src="res/icon/android/icon.png" />
+    </platform>
+    <plugin name="cordova-plugin-fingerprint-aio" spec="^5.0.0" />
+    <platform name="android">
+        <preference name="AndroidXEnabled" value="true" />
+    </platform>
 </widget>
