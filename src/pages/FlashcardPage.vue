@@ -158,7 +158,7 @@
                       </q-item>
                     </q-list>
                   </q-btn-dropdown>
-                  <q-btn color="primary" icon="volume_up" flat @click="speakCharacter" />
+                  <q-btn color="primary" icon="volume_up" flat @click="speak" />
                 </div>
                 <div class="text-center q-mb-sm text-accent">
                   {{ isChinese ? active.pinyin : '' }}
@@ -355,6 +355,7 @@
 </template>
 
 <script setup>
+/* global TTS */
 import { ref, computed, watch, onMounted, onBeforeUnmount } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useQuasar } from 'quasar'
@@ -593,7 +594,7 @@ function handleArrow(e) {
     flipped.value = !flipped.value
   }
   if (e.key === 'ArrowUp') {
-    speakCharacter()
+    speak()
   }
 }
 
@@ -644,13 +645,18 @@ function loadFromStorage() {
 const selectLanguage = (lang) => {
   selectedLanguage.value = lang
 }
-const speakCharacter = () => {
-  const utterance = new SpeechSynthesisUtterance(active.value.frontText)
-  utterance.lang = selectedLanguage.value?.tts || 'en-US'
-  utterance.pitch = 1
-  utterance.rate = 0.5
-  speechSynthesis.speak(utterance)
-  $q.notify({ type: 'positive', color: 'blue', message: 'Speaking ' + active.value.frontText })
+const speak = () => {
+  TTS.speak({
+    text: active.value.frontText,
+    locale: selectedLanguage.value?.tts || 'en-US',
+    rate: 0.8,
+  }).then(() => {
+    $q.notify({
+      type: 'positive',
+      color: 'blue',
+      message: 'Speaking ' + active.value.frontText,
+    })
+  })
 }
 
 const showCards = computed(() => {
