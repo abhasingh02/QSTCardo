@@ -9,7 +9,8 @@
       "ios"
     ],
     "plugins": {
-      "cordova-plugin-fingerprint-aio": {}
+      "cordova-plugin-fingerprint-aio": {},
+      "cordova-plugin-tts": {}
     }
   },
   "description": "A sample Apache Cordova application that responds to the deviceready event.",
@@ -25,6 +26,7 @@
   "devDependencies": {
     "cordova-android": "^14.0.1",
     "cordova-ios": "^8.0.0",
-    "cordova-plugin-fingerprint-aio": "^6.0.1"
+    "cordova-plugin-fingerprint-aio": "^6.0.1",
+    "cordova-plugin-tts": "^0.2.3"
   }
 }
