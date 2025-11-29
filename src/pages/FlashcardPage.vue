@@ -34,6 +34,7 @@
                     <div class="col-12 col-sm-6">
                       <q-input v-model="newFront" label="Front" filled bordered />
                       <q-uploader
+                        ref="frontUploader"
                         accept="image/*"
                         :max-files="1"
                         label="Upload Front Image (optional)"
@@ -49,6 +50,7 @@
                     <div class="col-12 col-sm-6">
                       <q-input v-model="newBack" label="Back" filled bordered />
                       <q-uploader
+                        ref="backUploader"
                         accept="image/*"
                         :max-files="1"
                         label="Upload Back Image (optional)"
@@ -394,7 +396,8 @@ const backCol = ref(null)
 const columnOptions = ref([]) // your [{label, value}, ...]
 const frontImage = ref(null)
 const backImage = ref(null)
-
+const frontUploader = ref(null)
+const backUploader = ref(null)
 function onImageSelected(files, side) {
   if (side === 'front') frontImage.value = files[0]
   if (side === 'back') backImage.value = files[0]
@@ -437,6 +440,12 @@ function clearInputs() {
   newBack.value = ''
   frontImage.value = null
   backImage.value = null
+  if (frontUploader.value) {
+    frontUploader.value.reset()
+  }
+  if (backUploader.value) {
+    backUploader.value.reset()
+  }
 }
 
 onMounted(() => {
