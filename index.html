@@ -17,6 +17,17 @@
     <link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32x32.png" />
     <link rel="icon" type="image/png" sizes="16x16" href="icons/favicon-16x16.png" />
     <link rel="icon" type="image/ico" href="favicon.ico" />
+    <script>
+      window.googleReady = false
+      window.initMap = () => {
+        window.googleReady = true
+      }
+    </script>
+
+    <script
+      src="https://maps.googleapis.com/maps/api/js?key=YOUR_KEY&callback=initMap"
+      defer
+    ></script>
   </head>
   <body>
     <!-- quasar:entry-point -->
