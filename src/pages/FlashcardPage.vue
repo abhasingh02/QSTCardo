@@ -162,14 +162,7 @@
                   {{ isChinese ? active.pinyin : '' }}
                 </div>
                 <div class="row items-center justify-between no-wrap">
-                  <q-btn
-                    size="xs"
-                    flat
-                    icon="arrow_left"
-                    color="accent"
-                    class="q-mr-md"
-                    @click="prevCard"
-                  />
+                  <q-btn size="md" flat icon="arrow_left" color="accent" @click="prevCard" />
 
                   <div class="flashcard" @click="flip">
                     <div class="card-inner" :class="{ flipped }">
@@ -201,14 +194,7 @@
                     </div>
                   </div>
 
-                  <q-btn
-                    size="xs"
-                    color="accent"
-                    flat
-                    icon="arrow_right"
-                    class="q-ml-md"
-                    @click="nextCard"
-                  />
+                  <q-btn size="md" color="accent" flat icon="arrow_right" @click="nextCard" />
                 </div>
               </div>
 
