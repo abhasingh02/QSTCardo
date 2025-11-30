@@ -119,12 +119,17 @@
                       clickable
                       :active="card.id === activeId"
                       active-class="bg-blue-1"
-                      @click="selectCard(card.id)"
+                      @click="clickedFile(card)"
                     >
                       <!-- MAIN TEXT -->
                       <q-item-section>
-                        <div class="text-weight-medium" @click.stop="openCard(card)">
+                        <div class="text-weight-bold cursor-pointer">
                           {{ card.filename }}
+                        </div>
+                      </q-item-section>
+                      <q-item-section>
+                        <div class="text-caption text-grey-7">
+                          {{ formatTimestamp(card.createdAt) }}
                         </div>
                       </q-item-section>
                     </q-item>
@@ -354,6 +359,32 @@
       </q-card>
     </q-dialog>
   </q-page>
+  <q-dialog v-model="openDialog" persistent>
+    <q-card class="q-pa-md" style="min-width: 320px">
+      <!-- TITLE WITH CLOSE BUTTON -->
+      <q-card-section class="row items-center justify-between">
+        <div class="text-h6">File Options</div>
+
+        <q-btn icon="close" flat dense round v-close-popup />
+      </q-card-section>
+
+      <q-separator />
+
+      <!-- MESSAGE -->
+      <q-card-section>
+        What do you want to do with this file?
+        <div class="text-body2 text-grey">
+          {{ selectedFile?.name }}
+        </div>
+      </q-card-section>
+
+      <!-- ACTION BUTTONS -->
+      <q-card-actions align="right">
+        <q-btn flat label="Open" color="primary" @click="openCard()" />
+        <q-btn flat label="Delete" color="negative" @click="deleteCard()" />
+      </q-card-actions>
+    </q-card>
+  </q-dialog>
 </template>
 
 <script setup>
@@ -364,7 +395,7 @@ import { useQuasar } from 'quasar'
 import * as XLSX from 'xlsx'
 import { useCharacterStore } from 'src/stores/characterStore'
 import ImportExportMixin from 'src/mixins/import-export-mixin.js'
-const { exportFile } = ImportExportMixin()
+const { exportFile, loadExistingBackupsToStore, deleteBackup } = ImportExportMixin()
 
 const store = useCharacterStore()
 const router = useRouter()
@@ -401,6 +432,8 @@ const frontImage = ref(null)
 const backImage = ref(null)
 const frontUploader = ref(null)
 const backUploader = ref(null)
+const openDialog = ref(false)
+const selectedFile = ref({})
 function onImageSelected(files, side) {
   if (side === 'front') frontImage.value = files[0]
   if (side === 'back') backImage.value = files[0]
@@ -467,7 +500,11 @@ function triggerFile() {
 }
 
 function refreshCards() {
-  store.setFlashcards()
+  if (!window.cordova) {
+    store.setFlashcards()
+  } else {
+    loadExistingBackupsToStore()
+  }
 }
 
 function handleExcelFile(e) {
@@ -803,12 +840,31 @@ function saveCardsAndExport() {
     exportFile(filteredData)
   }
 }
+function clickedFile(selected) {
+  console.log('selected', selected, store.savedFlashcards)
+  selectedFile.value = selected
+  openDialog.value = true
+}
+function deleteCard() {
+  deleteBackup(selectedFile.value)
+  openDialog.value = false
+}
+function formatTimestamp(ts) {
+  const d = new Date(ts)
+
+  return `${d.toLocaleDateString('en-GB')} - ${d.toLocaleTimeString('en-GB', {
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false,
+  })}`
+}
 
 function openCard(selected) {
-  console.log('selected', selected.path)
-
+  console.log('selected', selected, store.savedFlashcards)
   // If "selected" contains a predefined path, load JSON directly
-  if (selected && selected.path) {
+  if (selected && selected.path && !window.cordova) {
+    console.log('device is not mobile')
+
     fetch(selected.path)
       .then((res) => {
         if (!res.ok) throw new Error('File not found: ' + selected.path)

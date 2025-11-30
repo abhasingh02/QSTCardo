@@ -141,29 +141,33 @@ export default function useFileMixin() {
   /* =====================================================
       DELETE BACKUP
   ===================================================== */
-  const deleteBackup = () => {
+  const deleteBackup = (selected) => {
     const list = store.savedFlashcards || []
-    if (!list.length) return $q.notify({ type: 'warning', message: 'No saved backups found' })
+    // Find the file object using selected value
+    const fileObj = list.length && list.find((f) => f.path === selected.path)
+    if (!fileObj) {
+      return $q.notify({ type: 'warning', message: 'Selected backup not found' })
+    }
+    // Delete the file
+    window.resolveLocalFileSystemURL(fileObj.path, (entry) => {
+      entry.remove(
+        () => {
+          // Remove from the store list
+          store.savedFlashcards = list.filter((f) => f.path !== selected)
 
-    $q.dialog({
-      title: 'Delete Backup',
-      message: 'Select backup to delete',
-      options: {
-        type: 'radio',
-        model: '',
-        items: list.map((f) => ({ label: f.name, value: f.path })),
-      },
-      cancel: true,
-    }).onOk((fileUrl) => {
-      window.resolveLocalFileSystemURL(fileUrl, (entry) => {
-        entry.remove(
-          () => {
-            store.removeFlashcardByPath(fileUrl)
-            $q.notify({ type: 'positive', message: 'Backup deleted' })
-          },
-          () => $q.notify({ type: 'negative', message: 'Delete failed' }),
-        )
-      })
+          $q.notify({
+            type: 'positive',
+            message: 'Deleting ' + entry.name.replace('.json', ''),
+          })
+          loadExistingBackupsToStore()
+        },
+        () => {
+          $q.notify({
+            type: 'negative',
+            message: 'Failed to delete backup',
+          })
+        },
+      )
     })
   }
 
