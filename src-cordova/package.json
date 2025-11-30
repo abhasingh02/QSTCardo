@@ -30,6 +30,9 @@
   ],
   "author": "Apache Cordova Team",
   "license": "Apache-2.0",
+  "eslintIgnore": [
+    "src-cordova/**"
+  ],
   "devDependencies": {
     "com-darryncampbell-cordova-plugin-intent": "github:darryncampbell/darryncampbell-cordova-plugin-intent",
     "cordova-android": "^14.0.1",
