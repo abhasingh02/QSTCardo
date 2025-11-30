@@ -10,7 +10,7 @@ export default function useFileMixin() {
       EXPORT JSON (browser + cordova)
   ===================================================== */
   const exportFile = (unsaved) => {
-    const data = unsaved || store.newList
+    const jsonStr = unsaved || JSON.parse(localStorage.getItem('flashcards'), null, 2)
     const filenameInput = ref('Flashcard')
 
     $q.dialog({
@@ -22,7 +22,6 @@ export default function useFileMixin() {
     }).onOk((inputName) => {
       const name = inputName?.trim() || 'MandarinDictionary'
       const finalName = name.endsWith('.json') ? name : name + '.json'
-      const jsonStr = JSON.stringify(data, null, 2)
 
       // Browser export
       if (!window.cordova) {
@@ -55,10 +54,12 @@ export default function useFileMixin() {
 
               // Update store
               const fileObj = {
+                data: jsonStr,
                 name: finalName,
                 filename: finalName.replace('.json', ''),
                 path: savedPath,
                 createdAt: Date.now(),
+                id: Date.now().toString(36) + Math.random().toString(36).slice(2, 8),
               }
               store.setFlashcards(fileObj)
               $q.notify({ type: 'positive', message: `Backup saved: ${finalName}` })
@@ -75,8 +76,6 @@ export default function useFileMixin() {
       LOAD EXISTING BACKUPS FROM STORAGE → STORE
   ===================================================== */
   function loadExistingBackupsToStore() {
-    console.log('loading from folder', store.savedFlashcards)
-
     if (!window.cordova) return
 
     const baseDir = cordova.file.externalDataDirectory || cordova.file.dataDirectory
@@ -85,8 +84,6 @@ export default function useFileMixin() {
       dir.getDirectory('QSTCardo', { create: true }, (qstDir) => {
         const reader = qstDir.createReader()
         reader.readEntries((entries) => {
-          console.log('entries', entries)
-
           const jsonFiles = entries.filter((e) => e.isFile && e.name.endsWith('.json'))
 
           store.savedFlashcards = jsonFiles.map((f) => ({
@@ -95,44 +92,6 @@ export default function useFileMixin() {
             path: f.nativeURL,
             createdAt: Date.now(),
           }))
-
-          console.log('Backups synced to store:', store.savedFlashcards)
-        })
-      })
-    })
-  }
-
-  /* =====================================================
-      IMPORT BACKUP
-  ===================================================== */
-  const importFile = () => {
-    const list = store.savedFlashcards || []
-    if (!list.length) return $q.notify({ type: 'warning', message: 'No saved backups found' })
-
-    $q.dialog({
-      title: 'Import Backup',
-      message: 'Select a backup to restore',
-      options: {
-        type: 'radio',
-        model: '',
-        items: list.map((f) => ({ label: f.name, value: f.path })),
-      },
-      cancel: true,
-    }).onOk((fileUrl) => {
-      window.resolveLocalFileSystemURL(fileUrl, (entry) => {
-        entry.file((file) => {
-          const reader = new FileReader()
-          reader.onloadend = () => {
-            try {
-              const json = JSON.parse(reader.result)
-              store.newList = json
-              loadExistingBackupsToStore()
-              $q.notify({ type: 'positive', message: 'Backup imported successfully' })
-            } catch {
-              $q.notify({ type: 'negative', message: 'Invalid JSON file' })
-            }
-          }
-          reader.readAsText(file)
         })
       })
     })
@@ -176,7 +135,6 @@ export default function useFileMixin() {
   ===================================================== */
   return {
     exportFile,
-    importFile,
     deleteBackup,
     loadExistingBackupsToStore,
   }
