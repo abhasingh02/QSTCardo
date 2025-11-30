@@ -53,21 +53,25 @@ export default defineConfig((/* ctx */) => {
       // polyfillModulePreload: true,
       // distDir
 
-      // extendViteConf (viteConf) {},
-      // viteVuePluginOptions: {},
+      extendViteConf(cfg) {
+        // Detect Cordova build from the environment
+        const isCordova = process.env.CORDOVA_PLATFORM !== undefined
 
-      vitePlugins: [
-        [
-          'vite-plugin-checker',
-          {
-            eslint: {
-              lintCommand: 'eslint -c ./eslint.config.js "./src*/**/*.{js,mjs,cjs,vue}"',
-              useFlatConfig: true,
+        // Run ESLint only when NOT building Cordova
+        if (!isCordova) {
+          cfg.plugins = cfg.plugins || []
+          cfg.plugins.push([
+            'vite-plugin-checker',
+            {
+              eslint: {
+                lintCommand: 'eslint "./src/**/*.{js,mjs,cjs,vue}"',
+                useFlatConfig: true,
+              },
             },
-          },
-          { server: false },
-        ],
-      ],
+            { server: false },
+          ])
+        }
+      },
     },
 
     // Full list of options: https://v2.quasar.dev/quasar-cli-vite/quasar-config-file#devserver
@@ -91,8 +95,7 @@ export default defineConfig((/* ctx */) => {
       // directives: [],
 
       // Quasar plugins
-      plugins: ['Notify','Dialog'],
-
+      plugins: ['Notify', 'Dialog'],
     },
 
     // animations: 'all', // --- includes all animations
