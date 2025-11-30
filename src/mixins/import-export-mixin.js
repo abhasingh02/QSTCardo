@@ -7,7 +7,8 @@ const store = useCharacterStore()
 
 export default function useFileMixin() {
   const $q = useQuasar()
-  const exportFile = (data) => {
+  const exportFile = (unsaved) => {
+    const data = unsaved || store.newList
     const filenameInput = ref('Flashcard')
 
     $q.dialog({
