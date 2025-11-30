@@ -10,7 +10,14 @@
     ],
     "plugins": {
       "cordova-plugin-fingerprint-aio": {},
-      "cordova-plugin-tts": {}
+      "cordova-plugin-tts": {},
+      "cordova-plugin-file": {},
+      "cordova-plugin-file-transfer": {},
+      "com.napolitano.cordova.plugin.intent": {},
+      "com-darryncampbell-cordova-plugin-intent": {},
+      "cordova-plugin-android-permissions": {},
+      "cordova-plugin-device": {},
+      "cordova-plugin-appinfo": {}
     }
   },
   "description": "A sample Apache Cordova application that responds to the deviceready event.",
@@ -24,9 +31,14 @@
   "author": "Apache Cordova Team",
   "license": "Apache-2.0",
   "devDependencies": {
+    "com-darryncampbell-cordova-plugin-intent": "github:darryncampbell/darryncampbell-cordova-plugin-intent",
     "cordova-android": "^14.0.1",
     "cordova-ios": "^8.0.0",
+    "cordova-plugin-appinfo": "^2.1.2",
+    "cordova-plugin-device": "^3.0.0",
+    "cordova-plugin-file-transfer": "^2.0.0",
     "cordova-plugin-fingerprint-aio": "^6.0.1",
+    "cordova-plugin-intent": "^0.1.2",
     "cordova-plugin-tts": "^0.2.3"
   }
 }

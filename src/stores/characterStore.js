@@ -41,15 +41,18 @@ export const useCharacterStore = defineStore('character', {
       return this.savedFlashcards
     },
     setFlashcards(flashcards) {
-      const modules = import.meta.glob('/src/data/*.json', { eager: true })
-      const files = Object.keys(modules).map((fullPath) => {
-        const filename = fullPath.split('/').pop()
-        return {
-          path: fullPath,
-          filename,
-        }
-      })
-      this.savedFlashcards = files
+      console.log(!window.cordova, 'flashcardssd==xh====', flashcards, this.savedFlashcards)
+      if (!window.cordova) {
+        const modules = import.meta.glob('/src/data/*.json', { eager: true })
+        const files = Object.keys(modules).map((fullPath) => {
+          const filename = fullPath.split('/').pop()
+          return {
+            path: fullPath,
+            filename,
+          }
+        })
+        this.savedFlashcards = files
+      }
       if (flashcards) {
         this.savedFlashcards.find((f) => f.filename === flashcards.filename) ||
           this.savedFlashcards.push(flashcards)
