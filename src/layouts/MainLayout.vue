@@ -12,8 +12,8 @@
                 <q-item-section>Home</q-item-section>
               </q-item>
               <q-item clickable @click="exportFile()">
-                <q-btn flat round dense icon="download" />
-                <q-item-section>Export</q-item-section>
+                <q-btn flat round dense icon="save" />
+                <q-item-section>Save</q-item-section>
               </q-item>
               <q-item clickable @click="exportToJSONBin()">
                 <q-btn flat round dense icon="sync" />

@@ -18,16 +18,6 @@
             <q-carousel-slide name="Create">
               <div>
                 <q-card flat bordered>
-                  <q-card-section>
-                    <q-btn class="q-mx-sm" color="accent" label="Open" @click="openCard" />
-                    <q-btn
-                      class="q-mx-sm"
-                      color="accent"
-                      outline
-                      label="Save"
-                      @click="saveCardsAndExport"
-                    />
-                  </q-card-section>
                   <q-card-section class="text-h6">Add Flashcard </q-card-section>
                   <q-card-section>
                     <!-- FRONT -->
@@ -119,12 +109,17 @@
                       clickable
                       :active="card.id === activeId"
                       active-class="bg-blue-1"
-                      @click="selectCard(card.id)"
+                      @click="clickedFile(card)"
                     >
                       <!-- MAIN TEXT -->
                       <q-item-section>
-                        <div class="text-weight-medium" @click.stop="openCard(card)">
+                        <div class="text-weight-bold cursor-pointer">
                           {{ card.filename }}
+                        </div>
+                      </q-item-section>
+                      <q-item-section>
+                        <div class="text-caption text-grey-7">
+                          {{ formatTimestamp(card.createdAt) }}
                         </div>
                       </q-item-section>
                     </q-item>
@@ -354,6 +349,32 @@
       </q-card>
     </q-dialog>
   </q-page>
+  <q-dialog v-model="openDialog" persistent>
+    <q-card class="q-pa-md" style="min-width: 320px">
+      <!-- TITLE WITH CLOSE BUTTON -->
+      <q-card-section class="row items-center justify-between">
+        <div class="text-h6">File Options</div>
+
+        <q-btn icon="close" flat dense round v-close-popup />
+      </q-card-section>
+
+      <q-separator />
+
+      <!-- MESSAGE -->
+      <q-card-section>
+        What do you want to do with this file?
+        <div class="text-body2 text-grey">
+          {{ selectedFile?.name }}
+        </div>
+      </q-card-section>
+
+      <!-- ACTION BUTTONS -->
+      <q-card-actions align="right">
+        <q-btn flat label="Open" color="primary" @click="openFile()" />
+        <q-btn flat label="Delete" color="negative" @click="deleteFile()" />
+      </q-card-actions>
+    </q-card>
+  </q-dialog>
 </template>
 
 <script setup>
@@ -364,7 +385,7 @@ import { useQuasar } from 'quasar'
 import * as XLSX from 'xlsx'
 import { useCharacterStore } from 'src/stores/characterStore'
 import ImportExportMixin from 'src/mixins/import-export-mixin.js'
-const { exportFile } = ImportExportMixin()
+const { loadExistingBackupsToStore, deleteBackup } = ImportExportMixin()
 
 const store = useCharacterStore()
 const router = useRouter()
@@ -375,7 +396,7 @@ const selectedLanguage = ref(null)
 const isChinese = computed(() => {
   return selectedLanguage.value?.name === 'Chinese'
 })
-const STORAGE_KEY = 'flashcards.v1'
+const STORAGE_KEY = 'flashcards'
 const selectAll = ref(false)
 const excelFileInput = ref(null)
 const excelData = ref([]) // parsed Excel rows
@@ -401,6 +422,8 @@ const frontImage = ref(null)
 const backImage = ref(null)
 const frontUploader = ref(null)
 const backUploader = ref(null)
+const openDialog = ref(false)
+const selectedFile = ref({})
 function onImageSelected(files, side) {
   if (side === 'front') frontImage.value = files[0]
   if (side === 'back') backImage.value = files[0]
@@ -434,10 +457,8 @@ async function addFlashcard() {
   }
 
   flashcards.value.push(card)
-
   // save to localStorage
-  localStorage.setItem('flashcards', JSON.stringify(flashcards.value))
-
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(flashcards.value))
   clearInputs()
 }
 
@@ -467,7 +488,11 @@ function triggerFile() {
 }
 
 function refreshCards() {
-  store.setFlashcards()
+  if (!window.cordova) {
+    store.setFlashcards()
+  } else {
+    loadExistingBackupsToStore()
+  }
 }
 
 function handleExcelFile(e) {
@@ -694,7 +719,6 @@ function uid() {
 // }
 
 function toggleSelectAll() {
-  console.log('selectAll', selectAll, selectedIds.value.length, filtered.value.length)
   if (selectAll.value) {
     selectedIds.value = filtered.value.map((c) => c.id)
   } else {
@@ -793,81 +817,35 @@ function cancelEdit() {
   editing.value = false
 }
 
-function saveCardsAndExport() {
-  let filteredData = flashcards.value
-  if (!filteredData.length) {
-    $q.notify({ type: 'negative', color: 'red', message: 'No matching characters to save' })
-    return
-  } else {
-    store.saveNewList(filteredData)
-    exportFile(filteredData)
-  }
+function clickedFile(selected) {
+  console.log('selected', selected, store.savedFlashcards)
+  selectedFile.value = selected
+  openDialog.value = true
+}
+function deleteFile() {
+  deleteBackup(selectedFile.value)
+  openDialog.value = false
 }
 
-function openCard(selected) {
-  console.log('selected', selected.path)
+function openFile() {
+  flashcards.value = selectedFile.value.data
+  openDialog.value = false
+}
 
-  // If "selected" contains a predefined path, load JSON directly
-  if (selected && selected.path) {
-    fetch(selected.path)
-      .then((res) => {
-        if (!res.ok) throw new Error('File not found: ' + selected.path)
-        return res.json()
-      })
-      .then((data) => {
-        if (!Array.isArray(data)) throw new Error('Invalid JSON format')
+function formatTimestamp(ts) {
+  const d = new Date(ts)
 
-        const items = data.map((c) => ({
-          id: c.id || uid(),
-          frontText: c.symbol || '',
-          backText: c.meaning || '',
-          pinyin: c.pinyin,
-          createdAt: Date.now(),
-        }))
-
-        flashcards.value = items
-        activeId.value = items[0]?.id || null
-      })
-      .catch((err) => {
-        alert('Failed to load JSON: ' + err.message)
-      })
-
-    return // Stop here—do not trigger file input
-  }
-  const inp = document.createElement('input')
-  inp.type = 'file'
-  inp.accept = 'application/json'
-  inp.onchange = (e) => {
-    const file = e.target.files[0]
-    if (!file) return
-    const reader = new FileReader()
-    reader.onload = () => {
-      try {
-        const data = JSON.parse(reader.result)
-        if (!Array.isArray(data)) throw new Error('Invalid format')
-        const items = data.map((c) => ({
-          id: c.id || uid(),
-          frontText: c.symbol || '',
-          backText: c.meaning || '',
-          pinyin: c.pinyin,
-          createdAt: Date.now(),
-        }))
-        flashcards.value = items
-        activeId.value = items[0].id
-      } catch (err) {
-        alert('Failed to import JSON: ' + err.message)
-      }
-    }
-    reader.readAsText(file)
-  }
-  inp.click()
-  $q.notify({ type: 'positive', color: 'blue', message: 'Flashcard file imported' })
+  return `${d.toLocaleDateString('en-GB')} - ${d.toLocaleTimeString('en-GB', {
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false,
+  })}`
 }
 
 const filtered = computed(() => {
   const q = (query.value || '').toLowerCase().trim()
   if (!q) return flashcards.value
-  return flashcards.value.filter(
+  return flashcards.value?.data[0].filter(
     (c) =>
       (c.frontText || '').toLowerCase().includes(q) || (c.backText || '').toLowerCase().includes(q),
   )
