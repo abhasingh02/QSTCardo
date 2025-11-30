@@ -2,7 +2,6 @@ import { defineStore } from 'pinia'
 
 export const useCharacterStore = defineStore('character', {
   state: () => ({
-    newList: [],
     savedFlashcards: [],
     selectedFile: [],
     languageList: [
@@ -41,7 +40,6 @@ export const useCharacterStore = defineStore('character', {
       return this.savedFlashcards
     },
     setFlashcards(flashcards) {
-      console.log(!window.cordova, 'flashcardssd==xh====', flashcards, this.savedFlashcards)
       if (!window.cordova) {
         const modules = import.meta.glob('/src/data/*.json', { eager: true })
         const files = Object.keys(modules).map((fullPath) => {
@@ -58,11 +56,6 @@ export const useCharacterStore = defineStore('character', {
           this.savedFlashcards.push(flashcards)
       }
       localStorage.setItem('list-of-file', JSON.stringify(this.savedFlashcards))
-    },
-
-    saveNewList(newList) {
-      this.newList = newList
-      // console.log('saveNewList(fileContents)', this.newList)
     },
   },
 })
