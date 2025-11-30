@@ -31,17 +31,18 @@
                   <q-card-section class="text-h6">Add Flashcard </q-card-section>
                   <q-card-section>
                     <!-- FRONT -->
-                    <div class="col-12 col-sm-6">
+                    <div>
                       <q-input v-model="newFront" label="Front" filled bordered />
                       <q-uploader
                         ref="frontUploader"
                         accept="image/*"
                         :max-files="1"
-                        label="Upload Front Image (optional)"
+                        auto-upload
+                        label="Upload Image (optional)"
                         :factory="() => null"
-                        flat
                         bordered
-                        class="q-mt-sm"
+                        class="full-width"
+                        @uploaded="uploaded"
                         @added="(files) => onImageSelected(files, 'front')"
                       />
                     </div>
@@ -53,11 +54,12 @@
                         ref="backUploader"
                         accept="image/*"
                         :max-files="1"
-                        label="Upload Back Image (optional)"
+                        label="Upload Image (optional)"
                         :factory="() => null"
-                        flat
+                        auto-upload
                         bordered
-                        class="q-mt-sm"
+                        class="full-width"
+                        @uploaded="uploaded"
                         @added="(files) => onImageSelected(files, 'back')"
                       />
                     </div>
@@ -402,6 +404,9 @@ const backUploader = ref(null)
 function onImageSelected(files, side) {
   if (side === 'front') frontImage.value = files[0]
   if (side === 'back') backImage.value = files[0]
+}
+function uploaded() {
+  $q.notify({ type: 'positive', message: 'Image uploaded successfully' })
 }
 
 // convert image to Base64
@@ -796,7 +801,6 @@ function saveCardsAndExport() {
   } else {
     store.saveNewList(filteredData)
     exportFile(filteredData)
-    $q.notify({ type: 'positive', color: 'red', message: 'Saved' })
   }
 }
 
