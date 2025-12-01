@@ -133,26 +133,24 @@
                   <div class="q-mt-sm row text-h6 text-primary">Add by excel file</div>
                   <q-card-section>
                     <div class="row justify-between items-center q-gutter-sm">
-                      <q-btn
-                        color="primary"
-                        icon="upload"
-                        label="Upload Excel"
-                        @click="triggerFile"
-                        flat
-                      />
-                      <input
-                        type="file"
-                        ref="excelFileInput"
-                        accept=".xlsx,.xls"
-                        style="display: none"
-                        @change="handleExcelFile"
-                      />
+                      <div class="relative-position">
+                        <q-btn color="primary" icon="upload" label="Upload Excel" flat />
+
+                        <!-- Full overlay over button to catch clicks -->
+                        <input
+                          type="file"
+                          accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel"
+                          @change="handleExcelFile"
+                          style="position: absolute; inset: 0; opacity: 0; cursor: pointer"
+                        />
+                      </div>
 
                       <q-btn color="primary" label="Generate" @click="generateFromTable" />
                     </div>
                   </q-card-section>
+
                   <!-- ADD FLASHCARD (Front | Back format) -->
-                  <div class="q-mt-sm row text-h6 text-primary">Add Flashcard</div>
+                  <div class="q-mt-sm row text-h6 text-primary">Add by 'Front | Back'</div>
 
                   <q-card-section>
                     <div class="row items-center q-gutter-sm">
@@ -681,7 +679,7 @@ function handleExcelFile(event) {
       const data = XLSX.utils.sheet_to_json(workbook.Sheets[sheet])
       console.log('Excel Data:', data)
     }
-    reader.readAsBinaryString(file)
+    reader.readAsArrayBuffer(file)
   }
 }
 
