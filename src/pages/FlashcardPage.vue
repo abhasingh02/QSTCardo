@@ -108,7 +108,7 @@
               <div class="list-and-view q-gutter-md">
                 <q-card flat bordered class="list q-pa-sm">
                   <q-card-section class="row justify-between items-center text-h6">
-                    <span>List ({{ showCards?.length }})</span>
+                    <span>Saved Files ({{ showCards?.length }})</span>
                     <q-btn flat icon="refresh" @click="refreshCards" />
                   </q-card-section>
 
