@@ -35,9 +35,7 @@
                       @click="exportFile()"
                     />
                   </q-card-section>
-                  <div class="row items-center justify-center text-h6 text-primary">
-                    Add Flashcard
-                  </div>
+                  <div class="row text-h6 text-primary">Add Flashcard</div>
                   <q-card-section>
                     <!-- FRONT -->
                     <div>
@@ -112,12 +110,10 @@
                     <q-btn color="primary" label="Add" @click="addFlashcard" />
                     <q-btn color="secondary" label="Clear" flat @click="clearInputs" />
                   </q-card-actions>
-                </q-card>
-                <q-card flat bordered>
-                  <div class="q-mt-sm row items-center justify-center text-h6 text-primary">
+                  <div v-if="!isCordova" class="q-mt-sm row text-h6 text-primary">
                     Generate Flashcards From Table
                   </div>
-                  <q-card-section>
+                  <q-card-section v-if="!isCordova">
                     <q-input
                       v-model="excelPaste"
                       type="textarea"
@@ -128,33 +124,49 @@
                       @paste="handleExcelPaste"
                     />
                   </q-card-section>
-                  <q-card-actions align="right" class="q-gutter-sm">
+                  <q-card-actions v-if="!isCordova" align="right" class="q-gutter-sm">
                     <div>
                       <q-btn color="primary" outline label="Append" @click="appendFromTable" />
                     </div>
                     <br />
                   </q-card-actions>
-                  <div class="q-mt-sm row items-center justify-center text-h6 text-primary">
-                    Add by excel file
-                  </div>
+                  <div class="q-mt-sm row text-h6 text-primary">Add by excel file</div>
                   <q-card-section>
                     <div class="row justify-between items-center q-gutter-sm">
-                      <q-btn
-                        color="primary"
-                        icon="upload"
-                        label="Upload Excel"
-                        @click="triggerFile"
-                        flat
-                      />
-                      <input
-                        type="file"
-                        ref="excelFileInput"
-                        accept=".xlsx,.xls"
-                        style="display: none"
-                        @change="handleExcelFile"
-                      />
+                      <div class="relative-position">
+                        <q-btn color="primary" icon="upload" label="Upload Excel" flat />
+
+                        <!-- Full overlay over button to catch clicks -->
+                        <input
+                          type="file"
+                          accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel"
+                          @change="handleExcelFile"
+                          style="position: absolute; inset: 0; opacity: 0; cursor: pointer"
+                        />
+                      </div>
 
                       <q-btn color="primary" label="Generate" @click="generateFromTable" />
+                    </div>
+                  </q-card-section>
+
+                  <!-- ADD FLASHCARD (Front | Back format) -->
+                  <div class="q-mt-sm row text-h6 text-primary">Add by 'Front | Back'</div>
+
+                  <q-card-section>
+                    <div class="row items-center q-gutter-sm">
+                      <q-input
+                        v-model="frontBack"
+                        label="Front | Back"
+                        placeholder="e.g. What is CPU? | Central Processing Unit"
+                        dense
+                        outlined
+                        filled
+                        class="col"
+                        clearable
+                        @blur="cacheInput"
+                      />
+
+                      <q-btn color="primary" label="Add" @click="addCard" />
                     </div>
                   </q-card-section>
                 </q-card>
@@ -487,15 +499,16 @@ const selectedLanguage = ref(null)
 const isChinese = computed(() => {
   return selectedLanguage.value?.name === 'Chinese'
 })
+const isCordova = window.cordova
 const STORAGE_KEY = 'flashcards'
 const selectAll = ref(false)
-const excelFileInput = ref(null)
 const excelData = ref([]) // parsed Excel rows
 const excelColumns = ref([]) // column names from Excel
 const excelColumnOptions = ref([]) // Quasar select-friendly options
 const flashcards = ref(loadFromStorage()) || []
 const newFront = ref('')
 const newBack = ref('')
+const frontBack = ref('')
 const excelPaste = ref('')
 const query = ref('')
 const activeId = ref(flashcards.value.length ? flashcards.value[0].id : null)
@@ -562,6 +575,34 @@ async function addFlashcard() {
   clearInputs()
   openPostDialog.value = true
 }
+function addCard() {
+  const text = frontBack.value
+
+  if (!text.includes('|')) {
+    return $q.notify({
+      type: 'warning',
+      message: 'Use Front | Back format',
+    })
+  }
+
+  const [front, back] = text.split('|').map((s) => s.trim())
+
+  const card = {
+    id: Date.now(),
+    frontText: front || null,
+    backText: back || null,
+    frontImage: '',
+    backImage: '',
+  }
+
+  flashcards.value.push(card)
+  // save to localStorage
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(flashcards.value))
+  clearInputs()
+  openPostDialog.value = true
+  // reset
+  frontBack.value = ''
+}
 
 const changeSlide = (item) => {
   openPostDialog.value = false
@@ -589,12 +630,9 @@ onMounted(() => {
 onBeforeUnmount(() => {
   window.removeEventListener('keydown', handleArrow)
 })
-function triggerFile() {
-  excelFileInput.value && excelFileInput.value.click()
-}
 
 function refreshCards() {
-  if (!window.cordova) {
+  if (!isCordova) {
     store.setFlashcards()
   } else {
     loadExistingBackupsToStore()
@@ -602,7 +640,7 @@ function refreshCards() {
 }
 
 function handleExcelFile(event) {
-  if (!window.cordova) {
+  if (!isCordova) {
     const file = event.target.files[0]
     if (!file) return
 
@@ -636,8 +674,9 @@ function handleExcelFile(event) {
       const sheet = workbook.SheetNames[0]
       const data = XLSX.utils.sheet_to_json(workbook.Sheets[sheet])
       console.log('Excel Data:', data)
+      askColumnSelection()
     }
-    reader.readAsBinaryString(file)
+    reader.readAsArrayBuffer(file)
   }
 }
 
@@ -826,17 +865,6 @@ function saveToStorage(data) {
 function uid() {
   return Date.now().toString(36) + Math.random().toString(36).slice(2, 8)
 }
-
-// function addFlashcard() {
-//   const frontText = (newFront.value || '').trim()
-//   const backText = (newBack.value || '').trim()
-//   if (!frontText && !backText) return
-//   const card = { id: uid(), frontText, backText, createdAt: Date.now() }
-//   flashcards.value.unshift(card)
-//   clearInputs()
-//   activeId.value = card.id
-//   flipped.value = false
-// }
 
 function toggleSelectAll() {
   if (selectAll.value) {
