@@ -502,7 +502,6 @@ const isChinese = computed(() => {
 const isCordova = window.cordova
 const STORAGE_KEY = 'flashcards'
 const selectAll = ref(false)
-const excelFileInput = ref(null)
 const excelData = ref([]) // parsed Excel rows
 const excelColumns = ref([]) // column names from Excel
 const excelColumnOptions = ref([]) // Quasar select-friendly options
@@ -631,9 +630,6 @@ onMounted(() => {
 onBeforeUnmount(() => {
   window.removeEventListener('keydown', handleArrow)
 })
-function triggerFile() {
-  excelFileInput.value && excelFileInput.value.click()
-}
 
 function refreshCards() {
   if (!isCordova) {
@@ -678,6 +674,7 @@ function handleExcelFile(event) {
       const sheet = workbook.SheetNames[0]
       const data = XLSX.utils.sheet_to_json(workbook.Sheets[sheet])
       console.log('Excel Data:', data)
+      askColumnSelection()
     }
     reader.readAsArrayBuffer(file)
   }
