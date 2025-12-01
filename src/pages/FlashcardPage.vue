@@ -151,6 +151,26 @@
                       <q-btn color="primary" label="Generate" @click="generateFromTable" />
                     </div>
                   </q-card-section>
+                  <!-- ADD FLASHCARD (Front | Back format) -->
+                  <div class="q-mt-sm row text-h6 text-primary">Add Flashcard</div>
+
+                  <q-card-section>
+                    <div class="row items-center q-gutter-sm">
+                      <q-input
+                        v-model="frontBack"
+                        label="Front | Back"
+                        placeholder="e.g. What is CPU? | Central Processing Unit"
+                        dense
+                        outlined
+                        filled
+                        class="col"
+                        clearable
+                        @blur="cacheInput"
+                      />
+
+                      <q-btn color="primary" label="Add" @click="addCard" />
+                    </div>
+                  </q-card-section>
                 </q-card>
               </div>
             </q-carousel-slide>
@@ -491,6 +511,7 @@ const excelColumnOptions = ref([]) // Quasar select-friendly options
 const flashcards = ref(loadFromStorage()) || []
 const newFront = ref('')
 const newBack = ref('')
+const frontBack = ref('')
 const excelPaste = ref('')
 const query = ref('')
 const activeId = ref(flashcards.value.length ? flashcards.value[0].id : null)
@@ -556,6 +577,34 @@ async function addFlashcard() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(flashcards.value))
   clearInputs()
   openPostDialog.value = true
+}
+function addCard() {
+  const text = frontBack.value
+
+  if (!text.includes('|')) {
+    return $q.notify({
+      type: 'warning',
+      message: 'Use Front | Back format',
+    })
+  }
+
+  const [front, back] = text.split('|').map((s) => s.trim())
+
+  const card = {
+    id: Date.now(),
+    frontText: front || null,
+    backText: back || null,
+    frontImage: '',
+    backImage: '',
+  }
+
+  flashcards.value.push(card)
+  // save to localStorage
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(flashcards.value))
+  clearInputs()
+  openPostDialog.value = true
+  // reset
+  frontBack.value = ''
 }
 
 const changeSlide = (item) => {
@@ -821,17 +870,6 @@ function saveToStorage(data) {
 function uid() {
   return Date.now().toString(36) + Math.random().toString(36).slice(2, 8)
 }
-
-// function addFlashcard() {
-//   const frontText = (newFront.value || '').trim()
-//   const backText = (newBack.value || '').trim()
-//   if (!frontText && !backText) return
-//   const card = { id: uid(), frontText, backText, createdAt: Date.now() }
-//   flashcards.value.unshift(card)
-//   clearInputs()
-//   activeId.value = card.id
-//   flipped.value = false
-// }
 
 function toggleSelectAll() {
   if (selectAll.value) {
