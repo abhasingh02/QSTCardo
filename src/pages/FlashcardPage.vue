@@ -35,9 +35,7 @@
                       @click="exportFile()"
                     />
                   </q-card-section>
-                  <div class="row items-center justify-center text-h6 text-primary">
-                    Add Flashcard
-                  </div>
+                  <div class="row text-h6 text-primary">Add Flashcard</div>
                   <q-card-section>
                     <!-- FRONT -->
                     <div>
@@ -112,11 +110,7 @@
                     <q-btn color="primary" label="Add" @click="addFlashcard" />
                     <q-btn color="secondary" label="Clear" flat @click="clearInputs" />
                   </q-card-actions>
-                </q-card>
-                <q-card flat bordered>
-                  <div class="q-mt-sm row items-center justify-center text-h6 text-primary">
-                    Generate Flashcards From Table
-                  </div>
+                  <div class="q-mt-sm row text-h6 text-primary">Generate Flashcards From Table</div>
                   <q-card-section>
                     <q-input
                       v-model="excelPaste"
@@ -134,9 +128,7 @@
                     </div>
                     <br />
                   </q-card-actions>
-                  <div class="q-mt-sm row items-center justify-center text-h6 text-primary">
-                    Add by excel file
-                  </div>
+                  <div class="q-mt-sm row text-h6 text-primary">Add by excel file</div>
                   <q-card-section>
                     <div class="row justify-between items-center q-gutter-sm">
                       <q-btn
