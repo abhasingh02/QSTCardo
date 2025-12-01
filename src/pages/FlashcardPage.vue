@@ -385,23 +385,30 @@
       </q-card-actions>
     </q-card>
   </q-dialog>
-
   <q-dialog v-model="openPostDialog">
-    <q-card style="min-width: 350px">
-      <q-card-section class="text-h6"> Select Item </q-card-section>
+    <q-card style="min-width: 300px">
+      <q-card-section class="row items-center justify-between bg-primary text-white">
+        <div class="text-h6 text-weight-medium">Card is added</div>
+        <q-btn icon="close" flat dense round v-close-popup class="text-white" />
+      </q-card-section>
 
-      <q-separator />
-
-      <q-list bordered separator>
-        <q-item v-for="(item, index) in items" :key="index" clickable @click="onSelect(item)">
-          <q-item-section>{{ item.label }}</q-item-section>
-        </q-item>
-      </q-list>
-
-      <q-separator />
-      <q-card-actions align="right">
-        <q-btn flat label="Close" color="primary" v-close-popup />
-      </q-card-actions>
+      <q-card-section>
+        <q-list bordered separator class="q-py-sm">
+          <q-item
+            v-for="(item, index) in postEntryOptions"
+            :key="index"
+            clickable
+            class="q-py-sm hover:bg-grey-3 transition-all cursor-pointer"
+            @click="changeSlide(item)"
+          >
+            <q-item-section>
+              <div class="text-body1 text-blue text-weight-medium">
+                {{ item.label }}
+              </div>
+            </q-item-section>
+          </q-item>
+        </q-list>
+      </q-card-section>
     </q-card>
   </q-dialog>
 </template>
@@ -453,10 +460,10 @@ const backUploader = ref(null)
 const openDialog = ref(false)
 const selectedFile = ref({})
 const openPostDialog = ref(false)
-const items = ref([
-  { id: 1, label: 'First Item' },
-  { id: 2, label: 'Second Item' },
-  { id: 3, label: 'Third Item' },
+const postEntryOptions = ref([
+  { id: 1, label: 'Add More', slide: 'Create' },
+  { id: 2, label: 'View flashcard', slide: 'View' },
+  { id: 3, label: 'Edit flashcard', slide: 'Edit' },
 ])
 
 function onImageSelected(files, side) {
@@ -498,10 +505,9 @@ async function addFlashcard() {
   openPostDialog.value = true
 }
 
-const onSelect = (item) => {
+const changeSlide = (item) => {
   openPostDialog.value = false
-  console.log('Selected:', item)
-  // perform your action here...
+  slide.value = item.slide
 }
 
 function clearInputs() {
