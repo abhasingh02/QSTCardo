@@ -26,7 +26,7 @@
               <div>
                 <q-card flat bordered>
                   <q-card-section>
-                    <q-btn class="q-mx-sm" color="accent" label="Open" @click="openCard" />
+                    <q-btn color="accent" label="Open" @click="openCard" />
                     <q-btn
                       class="q-mx-sm"
                       color="accent"
@@ -35,40 +35,76 @@
                       @click="exportFile()"
                     />
                   </q-card-section>
-                  <q-card-section class="text-h6">Add Flashcard </q-card-section>
+                  <div class="row items-center justify-center text-h6 text-primary">
+                    Add Flashcard
+                  </div>
                   <q-card-section>
                     <!-- FRONT -->
                     <div>
                       <q-input v-model="newFront" label="Front" filled bordered />
-                      <q-uploader
-                        ref="frontUploader"
-                        accept="image/*"
-                        :max-files="1"
-                        auto-upload
-                        label="Upload Image (optional)"
-                        :factory="() => null"
-                        bordered
-                        class="full-width"
-                        @uploaded="uploaded"
-                        @added="(files) => onImageSelected(files, 'front')"
-                      />
+                      <div
+                        class="row items-center q-mb-md cursor-pointer"
+                        @click="showFrontUploader = !showFrontUploader"
+                      >
+                        <q-icon
+                          :name="showFrontUploader ? 'keyboard_arrow_down' : 'chevron_right'"
+                          size="24px"
+                          class="q-mr-sm"
+                        />
+                        <span class="text-subtitle2">Add Image (optional)</span>
+                      </div>
+                      <q-slide-transition>
+                        <div v-show="showFrontUploader">
+                          <q-uploader
+                            ref="frontUploader"
+                            accept="image/*"
+                            :max-files="1"
+                            auto-upload
+                            label="Upload Image on front side"
+                            :factory="() => null"
+                            bordered
+                            class="full-width q-mt-sm"
+                            @uploaded="uploaded"
+                            @added="(files) => onImageSelected(files, 'front')"
+                          />
+                        </div>
+                      </q-slide-transition>
                     </div>
 
                     <!-- BACK -->
                     <div class="col-12 col-sm-6">
                       <q-input v-model="newBack" label="Back" filled bordered />
-                      <q-uploader
-                        ref="backUploader"
-                        accept="image/*"
-                        :max-files="1"
-                        label="Upload Image (optional)"
-                        :factory="() => null"
-                        auto-upload
-                        bordered
-                        class="full-width"
-                        @uploaded="uploaded"
-                        @added="(files) => onImageSelected(files, 'back')"
-                      />
+
+                      <!-- Header row with arrow -->
+                      <div
+                        class="row items-center q-mb-md cursor-pointer"
+                        @click="showBackUploader = !showBackUploader"
+                      >
+                        <q-icon
+                          :name="showBackUploader ? 'keyboard_arrow_down' : 'chevron_right'"
+                          size="24px"
+                          class="q-mr-sm"
+                        />
+                        <span class="text-subtitle2">Add Image (optional)</span>
+                      </div>
+
+                      <!-- Slide transition -->
+                      <q-slide-transition>
+                        <div v-show="showBackUploader">
+                          <q-uploader
+                            ref="backUploader"
+                            accept="image/*"
+                            :max-files="1"
+                            label="Upload Image in back side"
+                            :factory="() => null"
+                            auto-upload
+                            bordered
+                            class="full-width q-mt-sm"
+                            @uploaded="uploaded"
+                            @added="(files) => onImageSelected(files, 'back')"
+                          />
+                        </div>
+                      </q-slide-transition>
                     </div>
                   </q-card-section>
 
@@ -78,7 +114,9 @@
                   </q-card-actions>
                 </q-card>
                 <q-card flat bordered>
-                  <q-card-section class="text-h6"> Generate Flashcards From Table </q-card-section>
+                  <div class="q-mt-sm row items-center justify-center text-h6 text-primary">
+                    Generate Flashcards From Table
+                  </div>
                   <q-card-section>
                     <q-input
                       v-model="excelPaste"
@@ -91,23 +129,34 @@
                     />
                   </q-card-section>
                   <q-card-actions align="right" class="q-gutter-sm">
-                    <q-btn
-                      color="primary"
-                      icon="upload"
-                      label="Upload Excel"
-                      @click="triggerFile"
-                      flat
-                    />
-                    <input
-                      type="file"
-                      ref="excelFileInput"
-                      accept=".xlsx,.xls"
-                      style="display: none"
-                      @change="handleExcelFile"
-                    />
-                    <q-btn color="primary" label="Generate" @click="generateFromTable" />
-                    <q-btn color="primary" outline label="Append" @click="appendFromTable" />
+                    <div>
+                      <q-btn color="primary" outline label="Append" @click="appendFromTable" />
+                    </div>
+                    <br />
                   </q-card-actions>
+                  <div class="q-mt-sm row items-center justify-center text-h6 text-primary">
+                    Add by excel file
+                  </div>
+                  <q-card-section>
+                    <div class="row justify-between items-center q-gutter-sm">
+                      <q-btn
+                        color="primary"
+                        icon="upload"
+                        label="Upload Excel"
+                        @click="triggerFile"
+                        flat
+                      />
+                      <input
+                        type="file"
+                        ref="excelFileInput"
+                        accept=".xlsx,.xls"
+                        style="display: none"
+                        @change="handleExcelFile"
+                      />
+
+                      <q-btn color="primary" label="Generate" @click="generateFromTable" />
+                    </div>
+                  </q-card-section>
                 </q-card>
               </div>
             </q-carousel-slide>
@@ -467,6 +516,8 @@ const backUploader = ref(null)
 const openDialog = ref(false)
 const selectedFile = ref({})
 const openPostDialog = ref(false)
+const showFrontUploader = ref(false)
+const showBackUploader = ref(false)
 const postEntryOptions = ref([
   { id: 1, label: 'Add More', slide: 'Create' },
   { id: 2, label: 'View flashcard', slide: 'View' },
@@ -539,7 +590,7 @@ onBeforeUnmount(() => {
   window.removeEventListener('keydown', handleArrow)
 })
 function triggerFile() {
-  excelFileInput.value.click()
+  excelFileInput.value && excelFileInput.value.click()
 }
 
 function refreshCards() {
@@ -550,30 +601,44 @@ function refreshCards() {
   }
 }
 
-function handleExcelFile(e) {
-  const file = e.target.files[0]
-  if (!file) return
+function handleExcelFile(event) {
+  if (!window.cordova) {
+    const file = event.target.files[0]
+    if (!file) return
 
-  const reader = new FileReader()
-  reader.onload = (evt) => {
-    const data = new Uint8Array(evt.target.result)
-    const workbook = XLSX.read(data, { type: 'array' })
+    const reader = new FileReader()
+    reader.onload = (evt) => {
+      const data = new Uint8Array(evt.target.result)
+      const workbook = XLSX.read(data, { type: 'array' })
 
-    const sheet = workbook.Sheets[workbook.SheetNames[0]]
-    const json = XLSX.utils.sheet_to_json(sheet, { header: 1 })
+      const sheet = workbook.Sheets[workbook.SheetNames[0]]
+      const json = XLSX.utils.sheet_to_json(sheet, { header: 1 })
 
-    excelColumns.value = json[0] // ["Simplified", "Traditional", "Pinyin", "English"]
-    excelData.value = json.slice(1)
+      excelColumns.value = json[0] // ["Simplified", "Traditional", "Pinyin", "English"]
+      excelData.value = json.slice(1)
 
-    excelColumnOptions.value = json[0].map((h) => ({
-      label: String(h),
-      value: String(h),
-    }))
+      excelColumnOptions.value = json[0].map((h) => ({
+        label: String(h),
+        value: String(h),
+      }))
 
-    askColumnSelection()
+      askColumnSelection()
+    }
+
+    reader.readAsArrayBuffer(file)
+  } else {
+    const file = event.target.files[0]
+    if (!file) return
+
+    const reader = new FileReader()
+    reader.onload = (e) => {
+      const workbook = XLSX.read(e.target.result, { type: 'binary' })
+      const sheet = workbook.SheetNames[0]
+      const data = XLSX.utils.sheet_to_json(workbook.Sheets[sheet])
+      console.log('Excel Data:', data)
+    }
+    reader.readAsBinaryString(file)
   }
-
-  reader.readAsArrayBuffer(file)
 }
 
 function askColumnSelection() {
