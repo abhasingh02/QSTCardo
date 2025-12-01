@@ -110,8 +110,10 @@
                     <q-btn color="primary" label="Add" @click="addFlashcard" />
                     <q-btn color="secondary" label="Clear" flat @click="clearInputs" />
                   </q-card-actions>
-                  <div class="q-mt-sm row text-h6 text-primary">Generate Flashcards From Table</div>
-                  <q-card-section>
+                  <div v-if="!isCordova" class="q-mt-sm row text-h6 text-primary">
+                    Generate Flashcards From Table
+                  </div>
+                  <q-card-section v-if="!isCordova">
                     <q-input
                       v-model="excelPaste"
                       type="textarea"
@@ -122,7 +124,7 @@
                       @paste="handleExcelPaste"
                     />
                   </q-card-section>
-                  <q-card-actions align="right" class="q-gutter-sm">
+                  <q-card-actions v-if="!isCordova" align="right" class="q-gutter-sm">
                     <div>
                       <q-btn color="primary" outline label="Append" @click="appendFromTable" />
                     </div>
@@ -479,6 +481,7 @@ const selectedLanguage = ref(null)
 const isChinese = computed(() => {
   return selectedLanguage.value?.name === 'Chinese'
 })
+const isCordova = window.cordova
 const STORAGE_KEY = 'flashcards'
 const selectAll = ref(false)
 const excelFileInput = ref(null)
@@ -586,7 +589,7 @@ function triggerFile() {
 }
 
 function refreshCards() {
-  if (!window.cordova) {
+  if (!isCordova) {
     store.setFlashcards()
   } else {
     loadExistingBackupsToStore()
@@ -594,7 +597,7 @@ function refreshCards() {
 }
 
 function handleExcelFile(event) {
-  if (!window.cordova) {
+  if (!isCordova) {
     const file = event.target.files[0]
     if (!file) return
 
