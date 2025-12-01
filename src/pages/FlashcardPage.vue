@@ -1,6 +1,13 @@
 <template>
   <q-page class="q-pa-md">
-    <p class="text-h6">Flashcards</p>
+    <div class="row items-center q-gutter-sm">
+      <q-icon name="style" size="28px" color="primary" />
+      <div>
+        <p class="text-weight-bold text-accent q-mb-none">Quick Study Flashcards</p>
+        <p class="text-caption text-grey-7 q-mb-none">Your personal learning decks</p>
+      </div>
+    </div>
+    <br />
     <div class="q-gutter-sm">
       <div row class="justify-center">
         <q-btn-toggle
