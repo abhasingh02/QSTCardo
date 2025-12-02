@@ -19,10 +19,10 @@
                 <q-item-section>Subscription</q-item-section>
               </q-item>
 
-              <q-item clickable v-close-popup v-ripple @click="routePage('save')">
+              <!-- <q-item clickable v-close-popup v-ripple @click="routePage('save')">
                 <q-item-section avatar><q-icon name="save" /></q-item-section>
                 <q-item-section>Save</q-item-section>
-              </q-item>
+              </q-item> -->
 
               <q-item clickable v-close-popup v-ripple @click="routePage('shopping')">
                 <q-item-section avatar><q-icon name="library_add" /></q-item-section>
@@ -77,14 +77,14 @@ import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useQuasar } from 'quasar'
 import CryptoJS from 'crypto-js'
-import ImportExportMixin from '../mixins/import-export-mixin.js'
+// import useFileMixin from '../mixins/FileMixin.js'
 
 const router = useRouter()
 const $q = useQuasar()
 
 const showLogoutDialog = ref(false)
 
-const { exportFile } = ImportExportMixin()
+// const { exportFile } = useFileMixin()
 
 const SECRET_KEY = 'SUPER_SECRET_KEY_12345'
 
@@ -126,9 +126,9 @@ function routePage(action) {
     case 'shopping':
       router.push('/shopping')
       break
-    case 'save':
-      exportFile()
-      break
+    // case 'save':
+    //   exportFile()
+    //   break
     case 'cloud':
       // exportToJSONBin()
       $q.notify({
