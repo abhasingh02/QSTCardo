@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 
-export const useCharacterStore = defineStore('character', {
+export const useFlashcardStore = defineStore('card', {
   state: () => ({
     savedFlashcards: [],
     selectedFile: [],

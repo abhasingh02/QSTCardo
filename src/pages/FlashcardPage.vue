@@ -503,12 +503,12 @@ import { ref, computed, watch, onMounted, onBeforeUnmount } from 'vue'
 import { useRouter } from 'vue-router'
 import { useQuasar } from 'quasar'
 import * as XLSX from 'xlsx'
-import { useCharacterStore } from 'src/stores/characterStore'
+import { useFlashcardStore } from 'src/stores/cardStore'
 import ImportExportMixin from 'src/mixins/import-export-mixin.js'
 const { exportFile, loadExistingBackupsToStore, deleteBackup } = ImportExportMixin()
 
 const developerMode = ref(false)
-const store = useCharacterStore()
+const store = useFlashcardStore()
 const router = useRouter()
 const $q = useQuasar()
 const languageList = store.languageList
@@ -1088,9 +1088,8 @@ function openCard(selected) {
         if (!Array.isArray(data)) throw new Error('Invalid format')
         const items = data.map((c) => ({
           id: c.id || uid(),
-          frontText: c.symbol || '',
-          backText: c.meaning || '',
-          pinyin: c.pinyin,
+          frontText: c.frontText || '',
+          backText: c.backText || '',
           createdAt: Date.now(),
         }))
         flashcards.value = items

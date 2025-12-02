@@ -33,8 +33,3 @@ yarn-error.log*
 .env.local*
 
 
-# Ignore any local images you add inside assets/characters
-src/assets/
-
-# Ignore local API that stores data handlers (optional)
-# src/api/character.js

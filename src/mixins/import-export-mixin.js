@@ -1,8 +1,8 @@
 // src/mixins/fileMixin.js
 import { ref } from 'vue'
 import { useQuasar } from 'quasar'
-import { useCharacterStore } from 'src/stores/characterStore'
-const store = useCharacterStore()
+import { useFlashcardStore } from 'src/stores/cardStore'
+const store = useFlashcardStore()
 
 export default function useFileMixin() {
   const $q = useQuasar()
