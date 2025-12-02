@@ -18,6 +18,11 @@ const routes = [
         component: () => import('src/pages/FlashcardPage.vue'),
         meta: { requiresAuth: true },
       },
+      {
+        path: 'shopping',
+        component: () => import('src/pages/ShoppingPage.vue'),
+        meta: { requiresAuth: true },
+      },
     ],
   },
 ]
