@@ -1,14 +1,14 @@
 <template>
   <q-page class="q-pa-md">
     <div class="row items-center justify-between q-gutter-sm">
-      <q-icon name="style" size="28px" color="primary" />
-      <div>
-        <p class="text-weight-bold text-accent q-mb-none">Quick Study Flashcards</p>
-        <p class="text-caption text-grey-7 q-mb-none">Your personal learning decks</p>
+      <div class="row items-center q-gutter-sm">
+        <q-icon name="style" size="28px" color="primary" />
+        <div>
+          <p class="text-weight-bold text-accent q-mb-none">Quick Study Flashcards</p>
+          <p class="text-caption text-grey-7 q-mb-none">Your personal learning decks</p>
+        </div>
       </div>
-      <div>
-        <q-btn class="q-mx-sm" color="accent" label="Save" @click="saveCard()" />
-      </div>
+      <q-btn color="accent" label="Save" @click="saveCard()" />
     </div>
     <br />
     <div class="q-gutter-sm">

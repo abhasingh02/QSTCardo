@@ -15,6 +15,10 @@
                 <q-btn flat round dense icon="save" />
                 <q-item-section>Save</q-item-section>
               </q-item>
+              <q-item clickable to="/shopping" v-ripple>
+                <q-btn flat round dense icon="library_add" />
+                <q-item-section>Buy</q-item-section>
+              </q-item>
               <q-item clickable @click="exportToJSONBin()">
                 <q-btn flat round dense icon="sync" />
                 <q-item-section>Cloud</q-item-section>
