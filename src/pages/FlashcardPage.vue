@@ -37,7 +37,13 @@
                 <q-card-section>
                   <!-- FRONT -->
                   <div>
-                    <q-input v-model="newFront" label="Front" filled bordered />
+                    <q-input
+                      :disable="showFrontUploader"
+                      v-model="newFront"
+                      label="Front"
+                      filled
+                      bordered
+                    />
                     <div
                       class="row items-center q-mb-md cursor-pointer"
                       @click="showFrontUploader = !showFrontUploader"
@@ -70,7 +76,13 @@
 
                   <!-- BACK -->
                   <div class="col-12 col-sm-6">
-                    <q-input v-model="newBack" label="Back" filled bordered />
+                    <q-input
+                      :disable="showBackUploader"
+                      v-model="newBack"
+                      label="Back"
+                      filled
+                      bordered
+                    />
 
                     <!-- Header row with arrow -->
                     <div
