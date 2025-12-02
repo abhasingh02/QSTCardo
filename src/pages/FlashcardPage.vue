@@ -13,16 +13,40 @@
     <br />
     <div class="q-gutter-sm">
       <div row class="justify-center">
-        <q-btn-toggle
-          glossy
-          v-model="slide"
-          :options="[
-            { label: 'Create', value: 'Create' },
-            { label: 'List', value: 'List' },
-            { label: 'View', value: 'View' },
-            { label: 'Edit', value: 'Edit' },
-          ]"
-        />
+        <!-- ========= Compact Responsive Bubble Tabs ========= -->
+        <div class="row justify-center q-gutter-sm q-mt-sm tab-bubble-wrapper">
+          <q-btn
+            unelevated
+            label="Create"
+            class="tab-btn-xs tab-create"
+            :class="{ active: slide === 'Create' }"
+            @click="slide = 'Create'"
+          />
+
+          <q-btn
+            unelevated
+            label="List"
+            class="tab-btn-xs tab-list"
+            :class="{ active: slide === 'List' }"
+            @click="slide = 'List'"
+          />
+
+          <q-btn
+            unelevated
+            label="View"
+            class="tab-btn-xs tab-view"
+            :class="{ active: slide === 'View' }"
+            @click="slide = 'View'"
+          />
+
+          <q-btn
+            unelevated
+            label="Edit"
+            class="tab-btn-xs tab-edit"
+            :class="{ active: slide === 'Edit' }"
+            @click="slide = 'Edit'"
+          />
+        </div>
         <div>
           <q-carousel animated v-model="slide" infinite height="60vh">
             <q-carousel-slide name="Create">

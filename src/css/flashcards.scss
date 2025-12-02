@@ -1,0 +1,399 @@
+/* --------------------------------------------------
+   ✨ COLOR PALETTE (youthful, energetic)
+-------------------------------------------------- */
+$primary: #4e7bf2;
+$accent: #ff6f61;
+$green: #4cd964;
+$yellow: #ffd644;
+$violet: #9b59b6;
+$bg-soft: #f8f9fc;
+
+/* --------------------------------------------------
+   ✨ GLOBAL PAGE LOOK
+-------------------------------------------------- */
+.q-page {
+  background: linear-gradient(145deg, #eef3ff, #ffffff);
+  min-height: 100vh;
+  font-family: 'Nunito', 'Poppins', sans-serif;
+}
+
+/* --------------------------------------------------
+   ✨ CARD AESTHETICS
+-------------------------------------------------- */
+.q-card {
+  border-radius: 16px !important;
+  transition: 0.3s ease;
+}
+
+.q-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px rgba(78, 123, 242, 0.1);
+}
+
+/* For sections inside cards */
+.q-card-section {
+  border-radius: 12px;
+}
+
+/* --------------------------------------------------
+   ✨ BUTTONS — playful & modern
+-------------------------------------------------- */
+.q-btn {
+  border-radius: 12px !important;
+  font-weight: 600 !important;
+  transition: 0.2s ease;
+}
+
+.q-btn:hover:not(.disabled) {
+  transform: scale(1.05);
+}
+
+/* Primary */
+.q-btn--standard.text-primary,
+.q-btn.bg-primary {
+  background: $primary !important;
+  color: white !important;
+}
+
+/* Accent */
+.q-btn--standard.text-accent,
+.q-btn.bg-accent {
+  background: $accent !important;
+  color: white !important;
+}
+
+/* Positive */
+.q-btn.bg-positive {
+  background: $green !important;
+  color: white !important;
+}
+
+/* Negative */
+.q-btn.bg-negative {
+  background: #ff4d4f !important;
+  color: white !important;
+}
+
+/* --------------------------------------------------
+   ✨ INPUTS
+-------------------------------------------------- */
+.q-input {
+  border-radius: 14px !important;
+}
+
+.q-field__control {
+  border-radius: 14px !important;
+  background: #ffffff !important;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+}
+
+/* Focus glow */
+.q-field--focused .q-field__control {
+  box-shadow: 0 0 0 3px rgba(78, 123, 242, 0.25) !important;
+}
+
+/* --------------------------------------------------
+   ✨ CAROUSEL
+-------------------------------------------------- */
+.q-carousel {
+  border-radius: 20px;
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.06);
+}
+
+/* Slide background */
+.q-carousel__slide {
+  background: $bg-soft;
+  border-radius: 20px;
+}
+
+/* --------------------------------------------------
+   ✨ TOGGLE BUTTON GROUP
+-------------------------------------------------- */
+.q-btn-toggle {
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(78, 123, 242, 0.1);
+}
+
+.q-btn-toggle .q-btn {
+  border-radius: 12px !important;
+}
+
+/* --------------------------------------------------
+   ✨ LIST ITEMS
+-------------------------------------------------- */
+.q-item {
+  border-radius: 12px !important;
+}
+
+.q-item:hover {
+  background: rgba(78, 123, 242, 0.1);
+  transform: translateX(4px);
+}
+
+/* --------------------------------------------------
+   ✨ FLASHCARD (VIEW MODE)
+-------------------------------------------------- */
+.flashcard {
+  width: 260px;
+  height: 180px;
+  background: white;
+  perspective: 1000px;
+  border-radius: 20px;
+  box-shadow: 0 12px 20px rgba(78, 123, 242, 0.15);
+  cursor: pointer;
+  margin: auto;
+}
+
+.card-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transition: transform 0.6s;
+  transform-style: preserve-3d;
+}
+
+.card-inner.flipped {
+  transform: rotateY(180deg);
+}
+
+.card-face {
+  position: absolute;
+  backface-visibility: hidden;
+  border-radius: 20px;
+  padding: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+}
+
+.card-back {
+  transform: rotateY(180deg);
+  background: #fdf6ff;
+}
+
+/* --------------------------------------------------
+   ✨ DIALOGS — major beautification
+-------------------------------------------------- */
+.q-dialog__inner {
+  animation: dialog-pop 0.35s ease;
+}
+
+@keyframes dialog-pop {
+  0% {
+    transform: scale(0.7) translateY(20px);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Dialog card */
+.q-dialog .q-card {
+  border-radius: 20px !important;
+  box-shadow: 0 20px 40px rgba(78, 123, 242, 0.25) !important;
+  background: #ffffff;
+  animation: dialog-fade 0.25s ease;
+}
+
+/* Header of dialog */
+.q-dialog .q-card > .q-card-section:first-child {
+  background: linear-gradient(135deg, $primary, $violet);
+  color: white !important;
+  border-radius: 20px 20px 0 0 !important;
+  font-weight: 600;
+  box-shadow: inset 0 -3px 6px rgba(255, 255, 255, 0.3);
+  letter-spacing: 0.5px;
+}
+
+/* Buttons inside dialog */
+.q-dialog .q-btn {
+  border-radius: 12px !important;
+  font-weight: bold !important;
+}
+
+/* Hover for dialog options */
+.q-dialog .q-list .q-item:hover {
+  background: rgba(78, 123, 242, 0.15) !important;
+  transform: scale(1.02);
+  border-radius: 12px;
+}
+
+/* --------------------------------------------------
+   ✨ Uploader beautify
+-------------------------------------------------- */
+.q-uploader {
+  border-radius: 14px !important;
+  background: #ffffff !important;
+  box-shadow: 0 5px 12px rgba(0, 0, 0, 0.05);
+}
+
+.q-uploader .q-uploader__header {
+  border-radius: 14px 14px 0 0;
+}
+
+/* --------------------------------------------------
+   ✨ Excel file input overlay button
+-------------------------------------------------- */
+.relative-position input[type='file'] {
+  border-radius: 12px !important;
+}
+
+/* --------------------------------------------------
+   ✨ Hover pop animation (fun for kids)
+-------------------------------------------------- */
+.pop-hover {
+  transition: 0.15s;
+}
+
+.pop-hover:hover {
+  transform: scale(1.08);
+}
+
+/* --------------------------------------------------
+   ✨ Scrollbar (cute smaller style)
+-------------------------------------------------- */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: $primary;
+  border-radius: 10px;
+}
+::-webkit-scrollbar-track {
+  background: #e7ebff;
+}
+
+/* ============================================
+   COLORFUL + GRADIENT + BUBBLE TABS (B, C, D)
+============================================ */
+
+.tab-bubble-wrapper {
+  margin-top: 16px;
+}
+
+/* Base style for all tabs */
+.tab-btn {
+  padding: 12px 28px !important;
+  border-radius: 22px !important;
+  font-size: 1rem !important;
+  font-weight: 700 !important;
+  color: white !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transition: 0.25s ease;
+  transform: translateY(0);
+}
+
+/* On hover - bubble bounce */
+.tab-btn:hover {
+  transform: translateY(-4px) scale(1.05);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+}
+
+/* ACTIVE STATE – bigger bubble */
+.tab-btn.active {
+  transform: translateY(-6px) scale(1.12);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.25);
+  border: 2px solid white;
+}
+
+/* INDIVIDUAL BUTTON COLORS (B + C) */
+.tab-create {
+  background: linear-gradient(135deg, #4e7bf2, #6aa3ff) !important;
+}
+
+.tab-list {
+  background: linear-gradient(135deg, #34c759, #52e780) !important;
+}
+
+.tab-view {
+  background: linear-gradient(135deg, #9b59b6, #be78d1) !important;
+}
+
+.tab-edit {
+  background: linear-gradient(135deg, #ff9f43, #ffb56b) !important;
+}
+
+/* ============================================
+   RESPONSIVE + COMPACT BUBBLE TABS (B + C + D)
+============================================ */
+
+.tab-bubble-wrapper {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+/* Compact bubble style */
+.tab-btn-xs {
+  padding: 6px 14px !important; /* Smaller */
+  border-radius: 14px !important; /* Bubble */
+  font-size: 0.75rem !important; /* Small text */
+  font-weight: 700 !important;
+  color: white !important;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+  transition: 0.2s ease;
+  min-width: 65px; /* Keeps buttons equal */
+}
+
+/* Hover — subtle bounce */
+.tab-btn-xs:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Active — pop */
+.tab-btn-xs.active {
+  transform: translateY(-3px) scale(1.05);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.25);
+  border: 2px solid white;
+}
+
+/* Colors with gradient */
+.tab-create {
+  background: linear-gradient(135deg, #4e7bf2, #6aa3ff) !important;
+}
+
+.tab-list {
+  background: linear-gradient(135deg, #34c759, #66e88c) !important;
+}
+
+.tab-view {
+  background: linear-gradient(135deg, #9b59b6, #c47ad4) !important;
+}
+
+.tab-edit {
+  background: linear-gradient(135deg, #ff9f43, #ffc074) !important;
+}
+
+/* ========== Responsive Rules ========== */
+
+/* Small phones (≤ 360px width) */
+@media (max-width: 360px) {
+  .tab-btn-xs {
+    padding: 4px 10px !important;
+    font-size: 0.7rem !important;
+    min-width: 58px;
+  }
+}
+
+/* Large phones (≤ 450px width) */
+@media (max-width: 450px) {
+  .tab-btn-xs {
+    padding: 5px 12px !important;
+    font-size: 0.74rem !important;
+    min-width: 60px;
+  }
+}
+
+/* Tablets */
+@media (min-width: 768px) {
+  .tab-btn-xs {
+    padding: 8px 18px !important;
+    font-size: 0.85rem !important;
+  }
+}
