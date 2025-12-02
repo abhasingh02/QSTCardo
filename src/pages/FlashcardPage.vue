@@ -1,10 +1,13 @@
 <template>
   <q-page class="q-pa-md">
-    <div class="row items-center q-gutter-sm">
+    <div class="row items-center justify-between q-gutter-sm">
       <q-icon name="style" size="28px" color="primary" />
       <div>
         <p class="text-weight-bold text-accent q-mb-none">Quick Study Flashcards</p>
         <p class="text-caption text-grey-7 q-mb-none">Your personal learning decks</p>
+      </div>
+      <div>
+        <q-btn class="q-mx-sm" color="accent" label="Save" @click="exportFile()" />
       </div>
     </div>
     <br />
@@ -26,14 +29,7 @@
               <div>
                 <q-card flat bordered>
                   <q-card-section>
-                    <q-btn color="accent" label="Open" @click="openCard" />
-                    <q-btn
-                      class="q-mx-sm"
-                      color="accent"
-                      outline
-                      label="Save"
-                      @click="exportFile()"
-                    />
+                    <q-btn v-if="developerMode" color="accent" label="Open" @click="openCard" />
                   </q-card-section>
                   <div class="row text-h6 text-primary">Add Flashcard</div>
                   <q-card-section>
@@ -163,7 +159,6 @@
                         filled
                         class="col"
                         clearable
-                        @blur="cacheInput"
                       />
 
                       <q-btn color="primary" label="Add" @click="addCard" />
@@ -192,7 +187,7 @@
                       <!-- MAIN TEXT -->
                       <q-item-section>
                         <div class="text-weight-bold cursor-pointer">
-                          {{ card.filename }}
+                          {{ card.name }}
                         </div>
                       </q-item-section>
                       <q-item-section>
@@ -366,6 +361,7 @@
         </div>
       </div>
     </div>
+
     <q-dialog v-model="editing">
       <q-card class="q-pa-md" style="min-width: 350px; max-width: 500px">
         <q-card-section class="bg-primary text-white text-center">
@@ -491,6 +487,7 @@ import { useCharacterStore } from 'src/stores/characterStore'
 import ImportExportMixin from 'src/mixins/import-export-mixin.js'
 const { exportFile, loadExistingBackupsToStore, deleteBackup } = ImportExportMixin()
 
+const developerMode = ref(false)
 const store = useCharacterStore()
 const router = useRouter()
 const $q = useQuasar()
@@ -823,9 +820,13 @@ watch(slide, (val) => {
 
 function loadFromStorage() {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY)
-    if (!raw) return []
-    return JSON.parse(raw)
+    const raw = localStorage.getItem(STORAGE_KEY) || []
+    console.log(!raw, 'raw', raw)
+    if (!raw) {
+      return []
+    } else {
+      return JSON.parse(raw)
+    }
   } catch (e) {
     console.warn('Failed to load flashcards', e)
     return []
