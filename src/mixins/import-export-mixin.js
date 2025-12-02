@@ -20,8 +20,8 @@ export default function useFileMixin() {
       cancel: true,
       persistent: true,
     }).onOk((inputName) => {
-      const name = inputName?.trim() || 'MandarinDictionary'
-      const finalName = name.endsWith('.json') ? name : name + '.json'
+      const name = inputName?.trim().replace('.json') || ''
+      const finalName = name + '.json'
 
       // Browser export
       if (!window.cordova) {
@@ -87,8 +87,8 @@ export default function useFileMixin() {
           const jsonFiles = entries.filter((e) => e.isFile && e.name.endsWith('.json'))
 
           store.savedFlashcards = jsonFiles.map((f) => ({
-            name: f.name,
-            filename: f.name.replace('.json', ''),
+            name: f.name.replace('.json', ''),
+            filename: f.filename,
             path: f.nativeURL,
             createdAt: Date.now(),
           }))
