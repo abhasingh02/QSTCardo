@@ -832,18 +832,54 @@ function loadFromStorage() {
 const selectLanguage = (lang) => {
   selectedLanguage.value = lang
 }
+
 const speak = () => {
-  TTS.speak({
-    text: active.value.frontText,
-    locale: selectedLanguage.value?.tts || 'en-US',
-    rate: 0.8,
-  }).then(() => {
+  if (!selectedLanguage.value) {
+    $q.dialog({
+      message: `Please Select language`,
+      color: 'negative',
+      html: true,
+      ok: {
+        label: 'Ok',
+        color: 'primary',
+      },
+      persistent: true,
+    })
+    return
+  }
+  if (!isCordova) {
+    const utterance = new SpeechSynthesisUtterance(active.value.frontText || active.value.backText)
+    utterance.lang = selectedLanguage.value?.tts || 'en-US'
+    utterance.pitch = 1
+    utterance.rate = 0.5
+    speechSynthesis.speak(utterance)
     $q.notify({
       type: 'positive',
       color: 'blue',
-      message: 'Speaking ' + active.value.frontText,
+      message: 'Speaking ' + active.value.frontText || active.value.backText,
     })
-  })
+  } else {
+    TTS.speak(
+      {
+        text: active.value.frontText || active.value.backText,
+        locale: selectedLanguage.value?.tts || 'en-US',
+        rate: 0.8,
+      },
+      () => {
+        $q.notify({
+          type: 'positive',
+          color: 'blue',
+          message: 'Speaking ' + (active.value.frontText || active.value.backText),
+        })
+      },
+      () => {
+        $q.notify({
+          type: 'negative',
+          message: 'Something is wrong',
+        })
+      },
+    )
+  }
 }
 
 const showCards = computed(() => {
