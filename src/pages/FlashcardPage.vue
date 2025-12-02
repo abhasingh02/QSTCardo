@@ -1,10 +1,13 @@
 <template>
   <q-page class="q-pa-md">
-    <div class="row items-center q-gutter-sm">
+    <div class="row items-center justify-between q-gutter-sm">
       <q-icon name="style" size="28px" color="primary" />
       <div>
         <p class="text-weight-bold text-accent q-mb-none">Quick Study Flashcards</p>
         <p class="text-caption text-grey-7 q-mb-none">Your personal learning decks</p>
+      </div>
+      <div>
+        <q-btn class="q-mx-sm" color="accent" label="Save" @click="exportFile()" />
       </div>
     </div>
     <br />
@@ -26,14 +29,7 @@
               <div>
                 <q-card flat bordered>
                   <q-card-section>
-                    <q-btn color="accent" label="Open" @click="openCard" />
-                    <q-btn
-                      class="q-mx-sm"
-                      color="accent"
-                      outline
-                      label="Save"
-                      @click="exportFile()"
-                    />
+                    <q-btn v-if="developerMode" color="accent" label="Open" @click="openCard" />
                   </q-card-section>
                   <div class="row text-h6 text-primary">Add Flashcard</div>
                   <q-card-section>
@@ -366,6 +362,7 @@
         </div>
       </div>
     </div>
+
     <q-dialog v-model="editing">
       <q-card class="q-pa-md" style="min-width: 350px; max-width: 500px">
         <q-card-section class="bg-primary text-white text-center">
