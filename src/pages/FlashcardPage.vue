@@ -33,7 +33,6 @@
               </q-card>
               <q-card flat bordered>
                 <div class="q-px-md row text-h6 text-accent">Add Flashcard</div>
-                <q-separator />
                 <q-card-section>
                   <!-- FRONT -->
                   <div>
@@ -54,7 +53,7 @@
                         class="q-mr-sm"
                         color="primary"
                       />
-                      <span class="text-subtitle2 text-primary">Add Image (optional)</span>
+                      <span class="text-subtitle2 text-primary">Add Image</span>
                     </div>
                     <q-slide-transition>
                       <div v-show="showFrontUploader">
@@ -83,7 +82,7 @@
                       filled
                       bordered
                     />
-
+                    <q-separator />
                     <!-- Header row with arrow -->
                     <div
                       class="row items-center q-mb-md cursor-pointer"
@@ -95,7 +94,7 @@
                         class="q-mr-sm"
                         color="primary"
                       />
-                      <span class="text-subtitle2 text-primary">Add Image (optional)</span>
+                      <span class="text-subtitle2 text-primary">Add Image</span>
                     </div>
 
                     <!-- Slide transition -->
@@ -127,7 +126,6 @@
               <br />
               <q-card v-if="!isCordova" flat bordered>
                 <div class="q-px-md row text-h6 text-accent">Add From Table</div>
-                <q-separator />
                 <q-card-section>
                   <q-input
                     v-model="excelPaste"
@@ -139,13 +137,13 @@
                     @paste="handleExcelPaste"
                   />
                 </q-card-section>
-                <q-card-actions v-if="!isCordova" align="right" class="q-gutter-sm">
-                  <q-btn color="primary" outline label="Append" @click="appendFromTable" />
+                <q-card-actions align="right" class="q-gutter-sm">
+                  <q-btn color="primary" label="Append" @click="appendFromTable" />
                 </q-card-actions>
               </q-card>
+              <br />
               <q-card flat bordered>
                 <div class="q-px-md row text-h6 text-accent">Add by excel file</div>
-                <q-separator />
                 <q-card-section>
                   <div class="row justify-between items-center q-gutter-sm">
                     <div class="relative-position">
@@ -168,7 +166,6 @@
               <q-card flat bordered>
                 <!-- ADD FLASHCARD (Front | Back format) -->
                 <div class="q-px-md row text-h6 text-accent">Add by 'Front | Back'</div>
-                <q-separator />
                 <q-card-section>
                   <div class="row items-center q-gutter-sm">
                     <q-input
