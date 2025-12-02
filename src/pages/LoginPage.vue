@@ -255,7 +255,14 @@ function handleSignup() {
   allUsers.value.push(signupUsername.value)
 
   // save login
-  localStorage.setItem('user', encrypt({ username: signupUsername.value }))
+  localStorage.setItem(
+    'user',
+    encrypt({
+      username: signupUsername.value,
+      password: signupPassword.value,
+    }),
+  )
+
   localStorage.setItem('fingerEnabled', 'true')
 
   $q.notify({ type: 'positive', message: 'Signup successful!' })
@@ -280,7 +287,13 @@ function handleEmailLogin() {
   }
 
   // save active user
-  localStorage.setItem('user', encrypt({ username: loginUsername.value }))
+  localStorage.setItem(
+    'user',
+    encrypt({
+      username: loginUsername.value,
+      password: loginPassword.value,
+    }),
+  )
 
   $q.notify({ type: 'positive', message: 'Login successful!' })
   router.push('/home')
@@ -305,8 +318,17 @@ async function handleBiometricLogin() {
         })
       })
       .then(() => {
-        // THIRD: Only after fingerprint SUCCESS → complete login
-        localStorage.setItem('user', encrypt({ username: loginUsername.value }))
+        let db = JSON.parse(localStorage.getItem('usersDb') || '[]')
+        const found = db.find((u) => u.username === loginUsername.value)
+
+        localStorage.setItem(
+          'user',
+          encrypt({
+            username: loginUsername.value,
+            password: decrypt(found.password),
+          }),
+        )
+
         localStorage.setItem('fingerEnabled', 'true')
 
         $q.notify({ type: 'positive', message: 'Login successful!' })

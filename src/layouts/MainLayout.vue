@@ -3,45 +3,54 @@
     <!-- HEADER -->
     <q-header elevated class="bg-primary text-white">
       <q-toolbar>
-        <q-toolbar-title> QSTCardo </q-toolbar-title>
+        <q-toolbar-title>QSTCardo</q-toolbar-title>
+
+        <!-- MENU -->
         <q-btn flat icon="menu">
           <q-menu transition-show="jump-down" transition-hide="jump-up">
-            <q-list class="text-secondary" style="min-width: 100px">
-              <q-item clickable @click="routePage('/home')">
-                <q-btn flat round dense icon="home" />
+            <q-list class="text-secondary" style="min-width: 160px">
+              <q-item clickable v-close-popup v-ripple @click="routePage('home')">
+                <q-item-section avatar><q-icon name="home" /></q-item-section>
                 <q-item-section>Home</q-item-section>
               </q-item>
-              <q-item clickable to="/subscription" v-ripple>
-                <q-btn flat round dense icon="card_membership" />
+
+              <q-item clickable v-close-popup v-ripple @click="routePage('subscription')">
+                <q-item-section avatar><q-icon name="card_membership" /></q-item-section>
                 <q-item-section>Subscription</q-item-section>
               </q-item>
-              <q-item clickable @click="exportFile()">
-                <q-btn flat round dense icon="save" />
+
+              <q-item clickable v-close-popup v-ripple @click="routePage('save')">
+                <q-item-section avatar><q-icon name="save" /></q-item-section>
                 <q-item-section>Save</q-item-section>
               </q-item>
-              <q-item clickable to="/shopping" v-ripple>
-                <q-btn flat round dense icon="library_add" />
+
+              <q-item clickable v-close-popup v-ripple @click="routePage('shopping')">
+                <q-item-section avatar><q-icon name="library_add" /></q-item-section>
                 <q-item-section>Buy</q-item-section>
               </q-item>
-              <q-item clickable @click="exportToJSONBin()">
-                <q-btn flat round dense icon="sync" />
+
+              <q-item clickable v-close-popup v-ripple @click="routePage('cloud')">
+                <q-item-section avatar><q-icon name="sync" /></q-item-section>
                 <q-item-section>Cloud</q-item-section>
               </q-item>
+
               <q-separator />
-              <q-item class="text-red" clickable @click="showLogoutDialog = true">
-                <q-btn flat round dense icon="logout" />
+
+              <q-item clickable v-ripple class="text-red" @click="showLogoutDialog = true">
+                <q-item-section avatar><q-icon name="logout" /></q-item-section>
                 <q-item-section>Logout</q-item-section>
               </q-item>
             </q-list>
           </q-menu>
         </q-btn>
       </q-toolbar>
-      <!-- LOGOUT CONFIRMATION DIALOG -->
+
+      <!-- LOGOUT DIALOG -->
       <q-dialog v-model="showLogoutDialog">
         <q-card>
-          <q-card-section class="text-h6"> Confirm Logout </q-card-section>
+          <q-card-section class="text-h6">Confirm Logout</q-card-section>
 
-          <q-card-section> Are you sure you want to logout? </q-card-section>
+          <q-card-section>Are you sure you want to logout?</q-card-section>
 
           <q-card-actions align="right">
             <q-btn flat label="No" color="primary" v-close-popup />
@@ -56,7 +65,7 @@
       <router-view />
     </q-page-container>
 
-    <!-- FOOTER (optional) -->
+    <!-- FOOTER -->
     <q-footer class="bg-primary text-center text-grey-8">
       <div class="q-pa-sm text-caption">© 2025 QSTCardo</div>
     </q-footer>
@@ -69,61 +78,71 @@ import { useRouter } from 'vue-router'
 import { useQuasar } from 'quasar'
 import CryptoJS from 'crypto-js'
 import ImportExportMixin from '../mixins/import-export-mixin.js'
-const showLogoutDialog = ref(false)
+
 const router = useRouter()
 const $q = useQuasar()
-const { exportFile, exportToJSONBin } = ImportExportMixin()
+
+const showLogoutDialog = ref(false)
+
+const { exportFile } = ImportExportMixin()
 
 const SECRET_KEY = 'SUPER_SECRET_KEY_12345'
 
-// decrypt function (same as loginPage)
 function decrypt(cipher) {
   try {
     const bytes = CryptoJS.AES.decrypt(cipher, SECRET_KEY)
     return JSON.parse(bytes.toString(CryptoJS.enc.Utf8))
-  } catch (e) {
-    console.log('e', e)
-
+  } catch {
     return null
   }
 }
 
-// ⭐ Check login when Home button clicked
-function routePage(pageName) {
+function routePage(action) {
   const encrypted = localStorage.getItem('user')
 
   if (!encrypted) {
-    $q.notify({
-      type: 'warning',
-      message: 'You must log in first!',
-      top: true,
-    })
+    $q.notify({ type: 'warning', message: 'You must log in first!' })
     router.push('/login')
     return
   }
 
   const user = decrypt(encrypted)
 
-  if (!user || !user.email) {
-    $q.notify({
-      type: 'negative',
-      message: 'Invalid session. Please log in again.',
-    })
+  // Validate username + password
+  if (!user || !user.username || !user.password) {
+    $q.notify({ type: 'negative', message: 'Invalid session. Please log in again.' })
     localStorage.removeItem('user')
     router.push('/login')
     return
   }
 
-  // User is logged in → go to home
-  console.log('pageName', pageName)
-
-  router.push(pageName)
+  switch (action) {
+    case 'home':
+      router.push('/home')
+      break
+    case 'subscription':
+      router.push('/subscription')
+      break
+    case 'shopping':
+      router.push('/shopping')
+      break
+    case 'save':
+      exportFile()
+      break
+    case 'cloud':
+      // exportToJSONBin()
+      $q.notify({
+        type: 'warning',
+        message: 'Not implemented',
+        position: 'top',
+      })
+      break
+  }
 }
 
 function logout() {
   showLogoutDialog.value = false
   localStorage.removeItem('user')
-
   $q.notify({ type: 'positive', message: 'Logged out successfully!' })
   router.push('/login')
 }
