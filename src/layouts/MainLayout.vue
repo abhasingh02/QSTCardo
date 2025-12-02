@@ -1,9 +1,15 @@
 <template>
   <q-layout view="lHh Lpr lFf">
     <!-- HEADER -->
-    <q-header elevated class="bg-primary text-white">
-      <q-toolbar>
-        <q-toolbar-title>QSTCardo</q-toolbar-title>
+    <q-header elevated class="header-beauty">
+      <q-toolbar class="header-toolbar">
+        <!-- APP ICON -->
+        <q-avatar size="36px" rounded class="app-logo">
+          <q-icon name="style" size="26px" />
+        </q-avatar>
+
+        <!-- TITLE -->
+        <q-toolbar-title class="header-title"> QSTCardo </q-toolbar-title>
 
         <!-- MENU -->
         <q-btn flat icon="menu">
@@ -66,8 +72,9 @@
     </q-page-container>
 
     <!-- FOOTER -->
-    <q-footer class="bg-primary text-center text-grey-8">
-      <div class="q-pa-sm text-caption">© 2025 QSTCardo</div>
+
+    <q-footer class="footer-beauty">
+      <div class="footer-inner text-caption">© 2025 QSTCardo</div>
     </q-footer>
   </q-layout>
 </template>
