@@ -124,26 +124,29 @@
                 </q-card-actions>
               </q-card>
               <br />
-              <q-card v-if="!isCordova" flat bordered>
-                <div class="q-px-md row text-h6 text-accent">Add From Table</div>
-                <q-card-section>
-                  <q-input
-                    v-model="excelPaste"
-                    type="textarea"
-                    filled
-                    autogrow
-                    label="Paste rows from Excel (Front | Back)"
-                    placeholder="Copy rows from Excel and paste here..."
-                    @paste="handleExcelPaste"
-                  />
-                </q-card-section>
-                <q-card-actions align="right" class="q-gutter-sm">
-                  <q-btn color="primary" label="Append" @click="appendFromTable" />
-                </q-card-actions>
-              </q-card>
-              <br />
+              <div v-if="!isCordova">
+                <q-card flat bordered>
+                  <div class="q-px-md row text-h6 text-accent">Add From Table</div>
+                  <q-card-section>
+                    <q-input
+                      v-model="excelPaste"
+                      type="textarea"
+                      filled
+                      autogrow
+                      label="Paste rows from Excel (Front | Back)"
+                      placeholder="Copy rows from Excel and paste here..."
+                      @paste="handleExcelPaste"
+                    />
+                  </q-card-section>
+                  <q-card-actions align="right" class="q-gutter-sm">
+                    <q-btn color="primary" label="Append" @click="appendFromTable" />
+                  </q-card-actions>
+                </q-card>
+                <br />
+              </div>
+
               <q-card flat bordered>
-                <div class="q-px-md row text-h6 text-accent">Add by excel file</div>
+                <div class="q-px-md row text-h6 text-accent">Add by Excel file</div>
                 <q-card-section>
                   <div class="row justify-between items-center q-gutter-sm">
                     <div class="relative-position">
@@ -639,6 +642,20 @@ function clearInputs() {
 onMounted(() => {
   store.setFlashcards()
   window.addEventListener('keydown', handleArrow)
+  $q.notify({
+    type: 'info',
+    persistent: true,
+    message: 'Tap the card to see back side',
+    position: 'top',
+    timeout: 0, // stays until user clicks OK
+    actions: [
+      {
+        label: 'OK',
+        color: 'white',
+        handler: () => {},
+      },
+    ],
+  })
 })
 
 onBeforeUnmount(() => {
@@ -830,20 +847,6 @@ watch(flashcards, (val) => saveToStorage(val), { deep: true })
 watch(slide, (val) => {
   if (val === 'List') {
     store.setFlashcards()
-  } else if (val === 'View') {
-    $q.notify({
-      type: 'info',
-      message: 'Tap the card to see back side',
-      position: 'top',
-      timeout: 0, // stays until user clicks OK
-      actions: [
-        {
-          label: 'OK',
-          color: 'white',
-          handler: () => {},
-        },
-      ],
-    })
   }
 })
 
