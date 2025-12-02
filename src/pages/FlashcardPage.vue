@@ -159,7 +159,6 @@
                         filled
                         class="col"
                         clearable
-                        @blur="cacheInput"
                       />
 
                       <q-btn color="primary" label="Add" @click="addCard" />
@@ -188,7 +187,7 @@
                       <!-- MAIN TEXT -->
                       <q-item-section>
                         <div class="text-weight-bold cursor-pointer">
-                          {{ card.filename }}
+                          {{ card.name }}
                         </div>
                       </q-item-section>
                       <q-item-section>
@@ -488,6 +487,7 @@ import { useCharacterStore } from 'src/stores/characterStore'
 import ImportExportMixin from 'src/mixins/import-export-mixin.js'
 const { exportFile, loadExistingBackupsToStore, deleteBackup } = ImportExportMixin()
 
+const developerMode = ref(false)
 const store = useCharacterStore()
 const router = useRouter()
 const $q = useQuasar()
@@ -820,9 +820,13 @@ watch(slide, (val) => {
 
 function loadFromStorage() {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY)
-    if (!raw) return []
-    return JSON.parse(raw)
+    const raw = localStorage.getItem(STORAGE_KEY) || []
+    console.log(!raw, 'raw', raw)
+    if (!raw) {
+      return []
+    } else {
+      return JSON.parse(raw)
+    }
   } catch (e) {
     console.warn('Failed to load flashcards', e)
     return []

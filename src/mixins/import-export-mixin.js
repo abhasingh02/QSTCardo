@@ -10,7 +10,7 @@ export default function useFileMixin() {
       EXPORT JSON (browser + cordova)
   ===================================================== */
   const exportFile = (unsaved) => {
-    const jsonStr = unsaved || JSON.parse(localStorage.getItem('flashcards'), null, 2)
+    const jsonStr = unsaved || JSON.parse(localStorage.getItem('flashcards'), null, 2) || []
     const filenameInput = ref('Flashcard')
 
     $q.dialog({
@@ -55,14 +55,14 @@ export default function useFileMixin() {
               // Update store
               const fileObj = {
                 data: jsonStr,
-                name: finalName,
-                filename: finalName.replace('.json', ''),
+                name: finalName.replace('.json', ''),
+                filename: finalName,
                 path: savedPath,
                 createdAt: Date.now(),
                 id: Date.now().toString(36) + Math.random().toString(36).slice(2, 8),
               }
               store.setFlashcards(fileObj)
-              $q.notify({ type: 'positive', message: `Backup saved: ${finalName}` })
+              $q.notify({ type: 'positive', message: `Flashcard ${fileObj.name} saved` })
             }
             writer.onerror = (err) => console.log('Writer error:', err)
             writer.write(blob)
