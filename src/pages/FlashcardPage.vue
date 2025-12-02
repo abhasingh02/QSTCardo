@@ -835,7 +835,7 @@ watch(slide, (val) => {
     store.setFlashcards()
   } else if (val === 'View') {
     $q.notify({
-      type: 'warning',
+      type: 'info',
       message: 'Tap the card to see back side',
       position: 'top',
       timeout: 0, // stays until user clicks OK
@@ -1131,9 +1131,9 @@ const filtered = computed(() => {
 })
 
 const active = computed(() => {
-  const symbolView = flashcards.value.find((c) => c.id === activeId.value)
+  const cardView = flashcards.value && flashcards.value.find((c) => c.id === activeId.value)
   if (activeId.value) router.replace(`/flashcard/${activeId.value}`)
-  return symbolView || null
+  return cardView || null
 })
 const activeIndex = computed(() => {
   return Math.max(
