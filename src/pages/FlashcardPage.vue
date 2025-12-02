@@ -7,7 +7,7 @@
         <p class="text-caption text-grey-7 q-mb-none">Your personal learning decks</p>
       </div>
       <div>
-        <q-btn class="q-mx-sm" color="accent" label="Save" @click="exportFile()" />
+        <q-btn class="q-mx-sm" color="accent" label="Save" @click="saveCard()" />
       </div>
     </div>
     <br />
@@ -26,146 +26,154 @@
         <div>
           <q-carousel animated v-model="slide" infinite height="60vh">
             <q-carousel-slide name="Create">
-              <div>
-                <q-card flat bordered>
-                  <q-card-section>
-                    <q-btn v-if="developerMode" color="accent" label="Open" @click="openCard" />
-                  </q-card-section>
-                  <div class="row q-px-md text-h6 text-primary">Add Flashcard</div>
-                  <q-card-section>
-                    <!-- FRONT -->
-                    <div>
-                      <q-input v-model="newFront" label="Front" filled bordered />
-                      <div
-                        class="row items-center q-mb-md cursor-pointer"
-                        @click="showFrontUploader = !showFrontUploader"
-                      >
-                        <q-icon
-                          :name="showFrontUploader ? 'keyboard_arrow_down' : 'chevron_right'"
-                          size="24px"
-                          class="q-mr-sm"
+              <q-card v-if="developerMode">
+                <q-card-section>
+                  <q-btn color="accent" label="Open" @click="openCard" />
+                </q-card-section>
+              </q-card>
+              <q-card flat bordered>
+                <div class="q-px-md row text-h6 text-accent">Add Flashcard</div>
+                <q-separator />
+                <q-card-section>
+                  <!-- FRONT -->
+                  <div>
+                    <q-input v-model="newFront" label="Front" filled bordered />
+                    <div
+                      class="row items-center q-mb-md cursor-pointer"
+                      @click="showFrontUploader = !showFrontUploader"
+                    >
+                      <q-icon
+                        :name="showFrontUploader ? 'keyboard_arrow_down' : 'chevron_right'"
+                        size="24px"
+                        class="q-mr-sm"
+                        color="primary"
+                      />
+                      <span class="text-subtitle2 text-primary">Add Image (optional)</span>
+                    </div>
+                    <q-slide-transition>
+                      <div v-show="showFrontUploader">
+                        <q-uploader
+                          ref="frontUploader"
+                          accept="image/*"
+                          :max-files="1"
+                          auto-upload
+                          label="Upload Image on front side"
+                          :factory="() => null"
+                          bordered
+                          class="full-width q-mt-sm"
+                          @uploaded="uploaded"
+                          @added="(files) => onImageSelected(files, 'front')"
                         />
-                        <span class="text-subtitle2">Add Image (optional)</span>
                       </div>
-                      <q-slide-transition>
-                        <div v-show="showFrontUploader">
-                          <q-uploader
-                            ref="frontUploader"
-                            accept="image/*"
-                            :max-files="1"
-                            auto-upload
-                            label="Upload Image on front side"
-                            :factory="() => null"
-                            bordered
-                            class="full-width q-mt-sm"
-                            @uploaded="uploaded"
-                            @added="(files) => onImageSelected(files, 'front')"
-                          />
-                        </div>
-                      </q-slide-transition>
+                    </q-slide-transition>
+                  </div>
+
+                  <!-- BACK -->
+                  <div class="col-12 col-sm-6">
+                    <q-input v-model="newBack" label="Back" filled bordered />
+
+                    <!-- Header row with arrow -->
+                    <div
+                      class="row items-center q-mb-md cursor-pointer"
+                      @click="showBackUploader = !showBackUploader"
+                    >
+                      <q-icon
+                        :name="showBackUploader ? 'keyboard_arrow_down' : 'chevron_right'"
+                        size="24px"
+                        class="q-mr-sm"
+                        color="primary"
+                      />
+                      <span class="text-subtitle2 text-primary">Add Image (optional)</span>
                     </div>
 
-                    <!-- BACK -->
-                    <div class="col-12 col-sm-6">
-                      <q-input v-model="newBack" label="Back" filled bordered />
-
-                      <!-- Header row with arrow -->
-                      <div
-                        class="row items-center q-mb-md cursor-pointer"
-                        @click="showBackUploader = !showBackUploader"
-                      >
-                        <q-icon
-                          :name="showBackUploader ? 'keyboard_arrow_down' : 'chevron_right'"
-                          size="24px"
-                          class="q-mr-sm"
+                    <!-- Slide transition -->
+                    <q-slide-transition>
+                      <div v-show="showBackUploader">
+                        <q-uploader
+                          ref="backUploader"
+                          accept="image/*"
+                          :max-files="1"
+                          label="Upload Image in back side"
+                          :factory="() => null"
+                          auto-upload
+                          bordered
+                          class="full-width q-mt-sm"
+                          @uploaded="uploaded"
+                          @added="(files) => onImageSelected(files, 'back')"
                         />
-                        <span class="text-subtitle2">Add Image (optional)</span>
                       </div>
-
-                      <!-- Slide transition -->
-                      <q-slide-transition>
-                        <div v-show="showBackUploader">
-                          <q-uploader
-                            ref="backUploader"
-                            accept="image/*"
-                            :max-files="1"
-                            label="Upload Image in back side"
-                            :factory="() => null"
-                            auto-upload
-                            bordered
-                            class="full-width q-mt-sm"
-                            @uploaded="uploaded"
-                            @added="(files) => onImageSelected(files, 'back')"
-                          />
-                        </div>
-                      </q-slide-transition>
-                    </div>
-                  </q-card-section>
-
-                  <q-card-actions align="right">
+                    </q-slide-transition>
+                  </div>
+                </q-card-section>
+                <q-card-actions>
+                  <div class="full-width row justify-end q-gutter-md">
                     <q-btn color="primary" label="Add" @click="addFlashcard" />
                     <q-btn color="secondary" label="Clear" flat @click="clearInputs" />
-                  </q-card-actions>
-                  <div v-if="!isCordova" class="q-px-md row text-h6 text-primary">
-                    Add From Table
                   </div>
-                  <q-card-section v-if="!isCordova">
-                    <q-input
-                      v-model="excelPaste"
-                      type="textarea"
-                      filled
-                      autogrow
-                      label="Paste rows from Excel (Front | Back)"
-                      placeholder="Copy rows from Excel and paste here..."
-                      @paste="handleExcelPaste"
-                    />
-                  </q-card-section>
-                  <q-card-actions v-if="!isCordova" align="right" class="q-gutter-sm">
-                    <div>
-                      <q-btn color="primary" outline label="Append" @click="appendFromTable" />
-                    </div>
-                    <br />
-                  </q-card-actions>
-                  <div class="q-px-md row text-h6 text-primary">Add by excel file</div>
-                  <q-card-section>
-                    <div class="row justify-between items-center q-gutter-sm">
-                      <div class="relative-position">
-                        <q-btn color="primary" icon="upload" label="Upload Excel" flat />
+                </q-card-actions>
+              </q-card>
+              <br />
+              <q-card v-if="!isCordova" flat bordered>
+                <div class="q-px-md row text-h6 text-accent">Add From Table</div>
+                <q-separator />
+                <q-card-section>
+                  <q-input
+                    v-model="excelPaste"
+                    type="textarea"
+                    filled
+                    autogrow
+                    label="Paste rows from Excel (Front | Back)"
+                    placeholder="Copy rows from Excel and paste here..."
+                    @paste="handleExcelPaste"
+                  />
+                </q-card-section>
+                <q-card-actions v-if="!isCordova" align="right" class="q-gutter-sm">
+                  <q-btn color="primary" outline label="Append" @click="appendFromTable" />
+                </q-card-actions>
+              </q-card>
+              <q-card flat bordered>
+                <div class="q-px-md row text-h6 text-accent">Add by excel file</div>
+                <q-separator />
+                <q-card-section>
+                  <div class="row justify-between items-center q-gutter-sm">
+                    <div class="relative-position">
+                      <q-btn color="primary" icon="upload" label="Upload Excel" flat />
 
-                        <!-- Full overlay over button to catch clicks -->
-                        <input
-                          type="file"
-                          accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel"
-                          @change="handleExcelFile"
-                          style="position: absolute; inset: 0; opacity: 0; cursor: pointer"
-                        />
-                      </div>
-
-                      <q-btn color="primary" label="Generate" @click="generateFromTable" />
-                    </div>
-                  </q-card-section>
-
-                  <!-- ADD FLASHCARD (Front | Back format) -->
-                  <div class="q-px-md row text-h6 text-primary">Add by 'Front | Back'</div>
-
-                  <q-card-section>
-                    <div class="row items-center q-gutter-sm">
-                      <q-input
-                        v-model="frontBack"
-                        label="Front | Back"
-                        placeholder="e.g. What is CPU? | Central Processing Unit"
-                        dense
-                        outlined
-                        filled
-                        class="col"
-                        clearable
+                      <!-- Full overlay over button to catch clicks -->
+                      <input
+                        type="file"
+                        accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel"
+                        @change="handleExcelFile"
+                        style="position: absolute; inset: 0; opacity: 0; cursor: pointer"
                       />
-
-                      <q-btn color="primary" label="Add" @click="addCard" />
                     </div>
-                  </q-card-section>
-                </q-card>
-              </div>
+
+                    <q-btn color="primary" label="Generate" @click="generateFromTable" />
+                  </div>
+                </q-card-section>
+              </q-card>
+              <br />
+              <q-card flat bordered>
+                <!-- ADD FLASHCARD (Front | Back format) -->
+                <div class="q-px-md row text-h6 text-accent">Add by 'Front | Back'</div>
+                <q-separator />
+                <q-card-section>
+                  <div class="row items-center q-gutter-sm">
+                    <q-input
+                      v-model="frontBack"
+                      label="Front | Back"
+                      placeholder="e.g. What is CPU? | Central Processing Unit"
+                      dense
+                      outlined
+                      filled
+                      class="col"
+                      clearable
+                    />
+
+                    <q-btn color="primary" label="Add" @click="addCard" />
+                  </div>
+                </q-card-section>
+              </q-card>
             </q-carousel-slide>
             <q-carousel-slide name="List">
               <div class="list-and-view q-gutter-md">
@@ -317,7 +325,7 @@
                       <q-btn
                         size="sm"
                         color="negative"
-                        label="Delete Selected"
+                        label="Delete"
                         @click.stop="deleteSelected"
                       />
                     </div>
@@ -813,6 +821,20 @@ watch(flashcards, (val) => saveToStorage(val), { deep: true })
 watch(slide, (val) => {
   if (val === 'List') {
     store.setFlashcards()
+  } else if (val === 'View') {
+    $q.notify({
+      type: 'warning',
+      message: 'Tap the card to see back side',
+      position: 'top',
+      timeout: 0, // stays until user clicks OK
+      actions: [
+        {
+          label: 'OK',
+          color: 'white',
+          handler: () => {},
+        },
+      ],
+    })
   }
 })
 
@@ -1069,6 +1091,12 @@ function openCard(selected) {
   }
   inp.click()
   $q.notify({ type: 'positive', color: 'blue', message: 'Flashcard file imported' })
+}
+
+function saveCard() {
+  exportFile()
+  loadExistingBackupsToStore()
+  slide.value = 'List'
 }
 
 function formatTimestamp(ts) {
