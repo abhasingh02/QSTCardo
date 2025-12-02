@@ -53,7 +53,7 @@
                         class="q-mr-sm"
                         color="primary"
                       />
-                      <span class="text-subtitle2 text-primary">Add Image</span>
+                      <span class="text-subtitle2 text-primary">Add Image (Front)</span>
                     </div>
                     <q-slide-transition>
                       <div v-show="showFrontUploader">
@@ -94,7 +94,7 @@
                         class="q-mr-sm"
                         color="primary"
                       />
-                      <span class="text-subtitle2 text-primary">Add Image</span>
+                      <span class="text-subtitle2 text-primary">Add Image (Back)</span>
                     </div>
 
                     <!-- Slide transition -->
