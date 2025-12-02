@@ -31,7 +31,7 @@
                   <q-card-section>
                     <q-btn v-if="developerMode" color="accent" label="Open" @click="openCard" />
                   </q-card-section>
-                  <div class="row text-h6 text-primary">Add Flashcard</div>
+                  <div class="row q-px-md text-h6 text-primary">Add Flashcard</div>
                   <q-card-section>
                     <!-- FRONT -->
                     <div>
@@ -106,8 +106,8 @@
                     <q-btn color="primary" label="Add" @click="addFlashcard" />
                     <q-btn color="secondary" label="Clear" flat @click="clearInputs" />
                   </q-card-actions>
-                  <div v-if="!isCordova" class="q-mt-sm row text-h6 text-primary">
-                    Generate Flashcards From Table
+                  <div v-if="!isCordova" class="q-px-md row text-h6 text-primary">
+                    Add From Table
                   </div>
                   <q-card-section v-if="!isCordova">
                     <q-input
@@ -126,7 +126,7 @@
                     </div>
                     <br />
                   </q-card-actions>
-                  <div class="q-mt-sm row text-h6 text-primary">Add by excel file</div>
+                  <div class="q-px-md row text-h6 text-primary">Add by excel file</div>
                   <q-card-section>
                     <div class="row justify-between items-center q-gutter-sm">
                       <div class="relative-position">
@@ -146,7 +146,7 @@
                   </q-card-section>
 
                   <!-- ADD FLASHCARD (Front | Back format) -->
-                  <div class="q-mt-sm row text-h6 text-primary">Add by 'Front | Back'</div>
+                  <div class="q-px-md row text-h6 text-primary">Add by 'Front | Back'</div>
 
                   <q-card-section>
                     <div class="row items-center q-gutter-sm">
@@ -637,44 +637,42 @@ function refreshCards() {
 }
 
 function handleExcelFile(event) {
-  if (!isCordova) {
-    const file = event.target.files[0]
-    if (!file) return
+  const file = event.target.files[0]
+  if (!file) return
 
-    const reader = new FileReader()
-    reader.onload = (evt) => {
-      const data = new Uint8Array(evt.target.result)
-      const workbook = XLSX.read(data, { type: 'array' })
-
-      const sheet = workbook.Sheets[workbook.SheetNames[0]]
-      const json = XLSX.utils.sheet_to_json(sheet, { header: 1 })
-
-      excelColumns.value = json[0] // ["Simplified", "Traditional", "Pinyin", "English"]
-      excelData.value = json.slice(1)
-
-      excelColumnOptions.value = json[0].map((h) => ({
-        label: String(h),
-        value: String(h),
-      }))
-
-      askColumnSelection()
+  const reader = new FileReader()
+  reader.onload = (evt) => {
+    const arrayBuffer = evt.target.result
+    // Convert ArrayBuffer → Binary String (Cordova-safe)
+    let binary = ''
+    const bytes = new Uint8Array(arrayBuffer)
+    const len = bytes.byteLength
+    for (let i = 0; i < len; i++) {
+      binary += String.fromCharCode(bytes[i])
     }
 
-    reader.readAsArrayBuffer(file)
-  } else {
-    const file = event.target.files[0]
-    if (!file) return
+    const workbook = XLSX.read(binary, { type: 'binary' })
 
-    const reader = new FileReader()
-    reader.onload = (e) => {
-      const workbook = XLSX.read(e.target.result, { type: 'binary' })
-      const sheet = workbook.SheetNames[0]
-      const data = XLSX.utils.sheet_to_json(workbook.Sheets[sheet])
-      console.log('Excel Data:', data)
-      askColumnSelection()
+    const sheetName = workbook.SheetNames[0]
+    const sheet = workbook.Sheets[sheetName]
+
+    const rows = XLSX.utils.sheet_to_json(sheet, { header: 1 })
+    if (!rows || rows.length < 2) {
+      console.warn('Excel file empty / no rows')
+      return
     }
-    reader.readAsArrayBuffer(file)
+    excelColumns.value = rows[0]
+    excelData.value = rows.slice(1)
+
+    excelColumnOptions.value = rows[0].map((h) => ({
+      label: String(h),
+      value: String(h),
+    }))
+
+    askColumnSelection()
   }
+  // Modern universal method: Browser + Android + iOS
+  reader.readAsArrayBuffer(file)
 }
 
 function askColumnSelection() {
@@ -821,7 +819,6 @@ watch(slide, (val) => {
 function loadFromStorage() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY) || []
-    console.log(!raw, 'raw', raw)
     if (!raw) {
       return []
     } else {
