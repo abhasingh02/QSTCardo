@@ -11,6 +11,10 @@
                 <q-btn flat round dense icon="home" />
                 <q-item-section>Home</q-item-section>
               </q-item>
+              <q-item clickable to="/subscription" v-ripple>
+                <q-btn flat round dense icon="card_membership" />
+                <q-item-section>Subscription</q-item-section>
+              </q-item>
               <q-item clickable @click="exportFile()">
                 <q-btn flat round dense icon="save" />
                 <q-item-section>Save</q-item-section>

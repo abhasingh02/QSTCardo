@@ -23,6 +23,11 @@ const routes = [
         component: () => import('src/pages/ShoppingPage.vue'),
         meta: { requiresAuth: true },
       },
+      {
+        path: 'subscription',
+        component: () => import('src/pages/SubscriptionPage.vue'),
+        meta: { requiresAuth: true },
+      },
     ],
   },
 ]
