@@ -334,8 +334,10 @@
               <div class="list-and-view q-gutter-md">
                 <q-card flat bordered class="list q-pa-xs">
                   <q-card-section class="row items-center justify-between q-pa-sm bg-grey-2">
-                    <section class="col q-ml-lg text-purple items-center">
-                      <div class="text-h6">List ({{ filtered.length }})</div>
+                    <section class="col text-purple items-center">
+                      <div class="text-bold q-ml-md">
+                        {{ selectedIds.length + '/' + filtered.length }}
+                      </div>
                     </section>
                     <section>
                       <div class="col">
@@ -395,7 +397,7 @@
                       <!-- MAIN TEXT -->
                       <q-item-section>
                         <div class="text-weight-medium">
-                          {{ card.frontText }}
+                          {{ card.frontText || card.backText }}
                         </div>
                       </q-item-section>
 
