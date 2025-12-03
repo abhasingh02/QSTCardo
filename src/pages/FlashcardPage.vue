@@ -568,7 +568,7 @@ const selectAll = ref(false)
 const excelData = ref([]) // parsed Excel rows
 const excelColumns = ref([]) // column names from Excel
 const excelColumnOptions = ref([]) // Quasar select-friendly options
-const flashcards = ref(loadFromStorage()) || []
+const flashcards = ref(store.currentFlashcard) || []
 const newFront = ref('')
 const newBack = ref('')
 const frontBack = ref('')
@@ -912,19 +912,6 @@ watch(slide, (val) => {
   }
 })
 
-function loadFromStorage() {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY) || []
-    if (!raw) {
-      return []
-    } else {
-      return JSON.parse(raw)
-    }
-  } catch (e) {
-    console.warn('Failed to load flashcards', e)
-    return []
-  }
-}
 const selectLanguage = (lang) => {
   selectedLanguage.value = lang
 }
@@ -1138,7 +1125,9 @@ function deleteFile() {
 }
 
 function openFile() {
-  flashcards.value = store.savedFlashcards.find((f) => f.name === selectedFile.value.name)
+  const selectedCard = store.savedFlashcards.find((f) => f.name === selectedFile.value.name)
+  flashcards.value = selectedCard.data
+  store.setFlashcard(selectedCard)
   openDialog.value = false
 }
 
@@ -1252,6 +1241,8 @@ function flip() {
 }
 
 function prevCard() {
+  console.log('flashcards', flashcards)
+
   if (!flashcards.value.length) return
   const idx = flashcards.value.findIndex((c) => c.id === activeId.value)
   const nextIdx = idx <= 0 ? flashcards.value.length - 1 : idx - 1
