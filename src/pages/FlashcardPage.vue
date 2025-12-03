@@ -294,12 +294,11 @@
                       </q-item>
                     </q-list>
                   </q-btn-dropdown>
-                  <q-btn color="primary" icon="volume_up" flat @click="speak" />
+                  <q-btn color="primary" icon="volume_up" flat @click="speak(active)" />
                 </div>
                 <div class="text-center q-mb-sm text-accent">
                   {{ isChinese ? active.pinyin : '' }}
                 </div>
-                {{ active }}
                 <div class="row items-center justify-between no-wrap">
                   <q-btn size="md" flat icon="arrow_left" color="accent" @click="prevCard" />
 
@@ -917,7 +916,7 @@ const selectLanguage = (lang) => {
   selectedLanguage.value = lang
 }
 
-const speak = () => {
+const speak = (active) => {
   if (!selectedLanguage.value) {
     $q.dialog({
       message: `Please Select language`,
@@ -932,9 +931,7 @@ const speak = () => {
     return
   }
   if (!isCordova) {
-    const utterance = new SpeechSynthesisUtterance(
-      active.value[0].frontText || active.value[0].backText,
-    )
+    const utterance = new SpeechSynthesisUtterance(active.frontText || active.backText)
     utterance.lang = selectedLanguage.value?.tts || 'en-US'
     utterance.pitch = 1
     utterance.rate = 0.5
@@ -942,12 +939,16 @@ const speak = () => {
     $q.notify({
       type: 'positive',
       color: 'blue',
-      message: 'Speaking ' + active.value[0].frontText || active.value[0].backText,
+      message: 'Speaking ' + active.frontText || active.backText,
     })
   } else {
     TTS.speak(
       {
-        text: active.value[0].frontText || active.value[0].backText,
+        text: active.frontText
+          ? active.frontText
+          : active[0].frontText || active.backText
+            ? active.backText
+            : active[0].backText,
         locale: selectedLanguage.value?.tts || 'en-US',
         rate: 0.8,
       },
@@ -955,7 +956,12 @@ const speak = () => {
         $q.notify({
           type: 'positive',
           color: 'blue',
-          message: 'Speaking ' + (active.value[0].frontText || active.value[0].backText),
+          message:
+            'Speaking ' + active.frontText
+              ? active.frontText
+              : active[0].frontText || active.backText
+                ? active.backText
+                : active[0].backText,
         })
       },
       () => {
@@ -1210,7 +1216,7 @@ function formatTimestamp(ts) {
 const filtered = computed(() => {
   const q = (query.value || '').toLowerCase().trim()
   if (!q) return flashcards.value
-  return flashcards.value?.data[0].filter(
+  return flashcards.value[0].filter(
     (c) =>
       (c.frontText || '').toLowerCase().includes(q) || (c.backText || '').toLowerCase().includes(q),
   )
@@ -1218,12 +1224,8 @@ const filtered = computed(() => {
 
 const active = computed(() => {
   store.getFlashcard()
-  console.log('flashcards', flashcards.value, activeId.value)
-
   const cardView =
-    (flashcards.value?.data &&
-      activeId.value &&
-      flashcards.value?.filter((c) => c.id === activeId.value)) ||
+    (flashcards.value && activeId.value && flashcards.value.find((c) => c.id === activeId.value)) ||
     flashcards.value[0]
   return cardView || null
 })
@@ -1231,9 +1233,8 @@ const activeIndex = computed(() => {
   return Math.max(
     0,
     flashcards.value &&
-      flashcards.value?.data?.findIndex(
-        (c) =>
-          c.id === (activeId.value || (flashcards.value?.data[0] && flashcards.value?.data[0].id)),
+      flashcards.value?.findIndex(
+        (c) => c.id === (activeId.value || (flashcards.value[0] && flashcards.value[0].id)),
       ),
   )
 })
@@ -1248,8 +1249,6 @@ function flip() {
 }
 
 function prevCard() {
-  console.log('flashcards', flashcards)
-
   if (!flashcards.value.length) return
   const idx = flashcards.value.findIndex((c) => c.id === activeId.value)
   const nextIdx = idx <= 0 ? flashcards.value.length - 1 : idx - 1
