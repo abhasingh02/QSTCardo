@@ -637,7 +637,15 @@ function addCard() {
   if (!text.includes('|')) {
     return $q.notify({
       type: 'warning',
+      position: 'center',
       message: 'Use Front | Back format',
+      actions: [
+        {
+          label: 'OK',
+          color: 'white',
+          handler: () => {},
+        },
+      ],
     })
   }
 
@@ -685,7 +693,7 @@ onMounted(() => {
     type: 'info',
     persistent: true,
     message: 'Tap the card to see back side',
-    position: 'top',
+    position: 'center',
     timeout: 0, // stays until user clicks OK
     actions: [
       {
@@ -758,7 +766,18 @@ function askColumnSelection() {
 }
 function confirmColumnSelection() {
   if (!frontCol.value || !backCol.value) {
-    $q.notify({ type: 'warning', message: 'Please select both columns' })
+    $q.notify({
+      type: 'warning',
+      position: 'center',
+      message: 'Please select both columns',
+      actions: [
+        {
+          label: 'OK',
+          color: 'white',
+          handler: () => {},
+        },
+      ],
+    })
     return
   }
 
@@ -867,7 +886,7 @@ watch(selectAll, (val) => {
     $q.notify({
       type: 'warning',
       message: 'All cards selected',
-      position: 'top',
+      position: 'center',
       timeout: 0, // stays until user clicks OK
       actions: [
         {
@@ -981,7 +1000,18 @@ function toggleSelectAll() {
 
 function deleteSelected() {
   if (selectedIds.value.length === 0) {
-    $q.notify({ type: 'warning', message: 'No card selected to delete' })
+    $q.notify({
+      type: 'warning',
+      position: 'center',
+      message: 'No card selected to delete',
+      actions: [
+        {
+          label: 'OK',
+          color: 'white',
+          handler: () => {},
+        },
+      ],
+    })
     return
   } else if (selectedIds.value.length === filtered.value.length) {
     $q.dialog({
@@ -1028,7 +1058,18 @@ function deleteSelected() {
 
 function viewSelected() {
   if (selectedIds.value.length === 0) {
-    $q.notify({ type: 'warning', message: 'No card selected to view' })
+    $q.notify({
+      type: 'warning',
+      position: 'center',
+      message: 'No card selected to view',
+      actions: [
+        {
+          label: 'OK',
+          color: 'white',
+          handler: () => {},
+        },
+      ],
+    })
     return
   } else {
     $q.dialog({
@@ -1040,7 +1081,18 @@ function viewSelected() {
     }).onOk(() => {
       const selectedCards = flashcards.value.filter((c) => selectedIds.value.includes(c.id))
       if (selectedCards.length === 0) {
-        $q.notify({ type: 'warning', message: 'Selected cards not found' })
+        $q.notify({
+          type: 'warning',
+          position: 'center',
+          message: 'Selected cards not found',
+          actions: [
+            {
+              label: 'OK',
+              color: 'white',
+              handler: () => {},
+            },
+          ],
+        })
         return
       }
       flashcards.value = selectedCards
