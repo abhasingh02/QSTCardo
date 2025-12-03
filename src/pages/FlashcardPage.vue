@@ -336,7 +336,7 @@
                 </div>
               </div>
 
-              <div v-else>No card to view</div>
+              <div v-else class="no-card-center">No card to view</div>
             </q-carousel-slide>
 
             <q-carousel-slide name="Edit">
