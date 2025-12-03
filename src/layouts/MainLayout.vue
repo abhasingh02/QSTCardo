@@ -84,14 +84,14 @@ import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useQuasar } from 'quasar'
 import CryptoJS from 'crypto-js'
-import ImportExportMixin from '../mixins/import-export-mixin.js'
+import Filemixin from '../mixins/Filemixin.js'
 
 const router = useRouter()
 const $q = useQuasar()
 
 const showLogoutDialog = ref(false)
 
-const { exportFile } = ImportExportMixin()
+const { exportFile } = Filemixin()
 
 const SECRET_KEY = 'SUPER_SECRET_KEY_12345'
 
