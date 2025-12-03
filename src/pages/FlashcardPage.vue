@@ -155,7 +155,7 @@
               <!-- ADD FROM TABLE -->
               <div v-if="!isCordova" class="section-gap">
                 <q-card flat bordered class="create-card shadow-1">
-                  <div class="section-title color-purple">Add From Table</div>
+                  <div class="section-title">Add From Table</div>
                   <q-card-section>
                     <q-input
                       v-model="excelPaste"
@@ -173,6 +173,12 @@
                       label="Append"
                       class="pop-btn"
                       @click="appendFromTable"
+                    />
+                    <q-btn
+                      color="positive"
+                      label="Generate"
+                      class="pop-btn"
+                      @click="generateFromTable"
                     />
                   </q-card-actions>
                 </q-card>
@@ -198,19 +204,12 @@
                       style="opacity: 0; cursor: pointer"
                     />
                   </div>
-
-                  <!-- <q-btn
-                    color="positive"
-                    label="Generate"
-                    class="pop-btn"
-                    @click="generateFromTable"
-                  /> -->
                 </q-card-section>
               </q-card>
 
               <!-- QUICK ADD -->
               <q-card flat bordered class="create-card shadow-1 section-gap">
-                <div class="section-title color-blue">Quick Add (Front | Back)</div>
+                <div class="section-title color-purple">Quick Add (Front | Back)</div>
                 <q-card-section class="row items-center q-gutter-sm">
                   <q-input
                     v-model="frontBack"
@@ -784,10 +783,7 @@ function createFlashcardsFromExcel(frontCol, backCol) {
   flashcards.value = list
   activeId.value = list.length ? list[0].id : null
 
-  $q.notify({
-    type: 'positive',
-    message: `Imported ${list.length} flashcards`,
-  })
+  openPostDialog.value = true
 }
 
 function handleExcelPaste() {
@@ -812,19 +808,20 @@ function convertExcelToRows(text) {
     })
   }
 }
-// function generateFromTable() {
-//   const list = tableRows.value
-//     .filter((r) => r.frontText.trim() !== '')
-//     .map((r) => ({
-//       id: uid(),
-//       createdAt: Date.now(),
-//       frontText: r.frontText.trim(),
-//       backText: r.backText.trim(),
-//     }))
-//   if (!list.length) return
-//   flashcards.value = list
-//   activeId.value = flashcards.value[0].id
-// }
+function generateFromTable() {
+  const list = tableRows.value
+    .filter((r) => r.frontText.trim() !== '')
+    .map((r) => ({
+      id: uid(),
+      createdAt: Date.now(),
+      frontText: r.frontText.trim(),
+      backText: r.backText.trim(),
+    }))
+  if (!list.length) return
+  flashcards.value = list
+  activeId.value = flashcards.value[0].id
+  openPostDialog.value = true
+}
 function appendFromTable() {
   const list = tableRows.value
     .filter((r) => r.frontText.trim() !== '')
