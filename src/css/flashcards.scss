@@ -1,0 +1,821 @@
+/* ==================================================
+   🎨 THEME VARIABLES (CSS + SCSS)
+================================================== */
+
+:root {
+  --primary: #4e7bf2;
+  --accent: #ff6f61;
+  --positive: #4cd964;
+  --negative: #ff4d4f;
+  --yellow: #ffd644;
+  --violet: #9b59b6;
+  --bg-soft: #f8f9fc;
+
+  --text-main: #2a2a2a;
+  --text-muted: #444;
+  --card-bg: #ffffff;
+  --page-bg: #f7f9ff;
+}
+
+$primary: var(--primary);
+$accent: var(--accent);
+$positive: var(--positive);
+$negative: var(--negative);
+$yellow: var(--yellow);
+$violet: var(--violet);
+$bg-soft: var(--bg-soft);
+$text-main: var(--text-main);
+$text-muted: var(--text-muted);
+$card-bg: var(--card-bg);
+
+/* Gradient maps for tabs & section titles */
+$tab-gradients: (
+  create: (
+    #4e7bf2,
+    #6aa3ff,
+  ),
+  list: (
+    #34c759,
+    #52e780,
+  ),
+  view: (
+    #9b59b6,
+    #be78d1,
+  ),
+  edit: (
+    #ff9f43,
+    #ffb56b,
+  ),
+);
+
+$tab-gradients-compact: (
+  create: (
+    #4e7bf2,
+    #6aa3ff,
+  ),
+  list: (
+    #34c759,
+    #66e88c,
+  ),
+  view: (
+    #9b59b6,
+    #c47ad4,
+  ),
+  edit: (
+    #ff9f43,
+    #ffc074,
+  ),
+);
+
+$section-gradients: (
+  'blue': (
+    #4d7bff,
+    #6aa0ff,
+  ),
+  'orange': (
+    #ff9448,
+    #ff7b33,
+  ),
+  'green': (
+    #36c976,
+    #2dbb67,
+  ),
+  'purple': (
+    #a56bff,
+    #c38aff,
+  ),
+);
+
+/* ==================================================
+   🔁 MIXINS
+================================================== */
+
+@mixin elevated-card($radius: 16px, $shadow: 0 8px 16px rgba(78, 123, 242, 0.1)) {
+  border-radius: $radius !important;
+  box-shadow: $shadow;
+  transition: 0.3s ease;
+}
+
+@mixin elevated-hover($translate-y: -2px, $shadow: 0 8px 16px rgba(78, 123, 242, 0.1)) {
+  transform: translateY($translate-y);
+  box-shadow: $shadow;
+}
+
+@mixin pill-button($radius: 12px) {
+  border-radius: $radius !important;
+  font-weight: 600 !important;
+  transition: 0.2s ease;
+}
+
+@mixin gradient-bg($from, $to) {
+  background: linear-gradient(135deg, $from, $to) !important;
+}
+
+@mixin bubble-tab-base {
+  font-weight: 700 !important;
+  color: white !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transition: 0.25s ease;
+  transform: translateY(0);
+}
+
+@mixin bubble-tab-xs-base {
+  font-weight: 700 !important;
+  color: white !important;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+  transition: 0.2s ease;
+}
+
+/* Input field look (q-input / q-select / textarea) */
+@mixin input-field {
+  border-radius: 14px !important;
+  background: #ffffff !important;
+  border: 2px solid #d7e0ff !important;
+  transition: 0.25s ease !important;
+}
+
+/* Dialog card & header */
+@mixin dialog-card-base {
+  border-radius: 22px !important;
+  background: #ffffffee !important;
+  backdrop-filter: blur(16px);
+  box-shadow: 0 22px 40px rgba(0, 0, 0, 0.25) !important;
+  overflow: hidden;
+  animation: dialogShow 0.32s ease-out;
+  transition: 0.25s ease;
+}
+
+@mixin dialog-header-base {
+  color: white !important;
+  padding: 16px;
+  font-weight: 700;
+  font-size: 1.15rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  letter-spacing: 0.3px;
+  border-radius: 22px 22px 0 0 !important;
+}
+
+/* Close icon button inside dialogs / headers */
+@mixin dialog-close-btn {
+  background: #ffffff33 !important;
+  border-radius: 50% !important;
+  padding: 4px !important;
+  color: white !important;
+  transition: 0.2s ease;
+
+  &:hover {
+    background: #ffffff88 !important;
+    transform: rotate(90deg);
+  }
+}
+
+/* ==================================================
+   🌍 GLOBAL TYPOGRAPHY & PAGE
+================================================== */
+
+body,
+.q-page,
+.q-layout {
+  font-family: 'Poppins', 'Nunito', 'Inter', sans-serif;
+  background: var(--page-bg);
+  color: $text-main;
+}
+
+.q-page {
+  background: linear-gradient(145deg, #eef3ff, #ffffff);
+  min-height: 100vh;
+}
+
+/* Headings */
+h1,
+h2,
+h3,
+.text-h6 {
+  font-weight: 700 !important;
+}
+
+/* Text spacing */
+p,
+div,
+span {
+  letter-spacing: 0.2px;
+}
+
+/* ==================================================
+   🃏 CARDS & LIST ITEMS
+================================================== */
+
+.q-card {
+  @include elevated-card(16px, 0 8px 16px rgba(78, 123, 242, 0.1));
+
+  &:hover {
+    @include elevated-hover(-2px, 0 8px 16px rgba(78, 123, 242, 0.1));
+  }
+}
+
+/* Inner sections */
+.q-card-section {
+  border-radius: 12px;
+}
+
+/* List items */
+.q-item {
+  border-radius: 12px !important;
+  transition: 0.2s;
+
+  &:hover {
+    background: rgba(78, 123, 242, 0.1);
+    transform: translateX(4px);
+  }
+}
+
+/* ==================================================
+   🚀 BUTTONS (Global)
+================================================== */
+
+.q-btn {
+  @include pill-button(12px);
+
+  &:hover:not(.disabled) {
+    transform: scale(1.05);
+  }
+}
+
+/* Filled primary / accent / positive / negative */
+.q-btn--standard.text-primary,
+.q-btn.bg-primary {
+  background: $primary !important;
+  color: white !important;
+}
+
+.q-btn--standard.text-accent,
+.q-btn.bg-accent {
+  background: $accent !important;
+  color: white !important;
+}
+
+.q-btn.bg-positive {
+  background: $positive !important;
+  color: white !important;
+}
+
+.q-btn.bg-negative {
+  background: $negative !important;
+  color: white !important;
+}
+
+/* Toggle group */
+.q-btn-toggle {
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(78, 123, 242, 0.1);
+
+  .q-btn {
+    border-radius: 12px !important;
+  }
+}
+
+/* Generic hover-pop utility */
+.pop-hover {
+  transition: 0.15s;
+
+  &:hover {
+    transform: scale(1.08);
+  }
+}
+
+/* ==================================================
+   ✏️ INPUTS (q-input, q-select, textarea)
+================================================== */
+
+.q-field {
+  margin-bottom: 10px;
+
+  &__control {
+    @include input-field;
+    padding-left: 6px !important;
+  }
+
+  &:hover .q-field__control {
+    border-color: #a7bbff !important;
+  }
+
+  &--focused .q-field__control {
+    border-color: $primary !important;
+    box-shadow: 0 0 0 3px rgba(78, 123, 242, 0.25) !important;
+  }
+
+  &__label {
+    font-weight: 600;
+    color: $primary !important;
+  }
+
+  &__native {
+    font-size: 0.95rem;
+    color: #333;
+  }
+
+  &__append .q-icon {
+    color: $primary !important;
+  }
+}
+
+.q-input {
+  border-radius: 14px !important;
+}
+
+/* Textarea */
+textarea {
+  border-radius: 14px !important;
+}
+
+/* ==================================================
+   🎠 CAROUSEL
+================================================== */
+
+.q-carousel {
+  border-radius: 20px;
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.06);
+}
+
+.q-carousel__slide {
+  background: $bg-soft;
+  border-radius: 20px;
+}
+
+/* ==================================================
+   📦 UPLOADER + FILE INPUTS
+================================================== */
+
+.q-uploader {
+  border-radius: 14px !important;
+  background: #ffffff !important;
+  box-shadow: 0 5px 12px rgba(0, 0, 0, 0.05);
+
+  .q-uploader__header {
+    border-radius: 14px 14px 0 0;
+  }
+}
+
+/* Excel/file input overlay */
+.relative-position input[type='file'] {
+  border-radius: 12px !important;
+}
+
+/* ==================================================
+   🧾 FLASHCARD VIEW (flip card)
+================================================== */
+
+.flashcard {
+  width: 260px;
+  height: 180px;
+  background: white;
+  perspective: 1000px;
+  border-radius: 20px;
+  box-shadow: 0 12px 20px rgba(78, 123, 242, 0.15);
+  cursor: pointer;
+  margin: auto;
+}
+
+.card-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transition: transform 0.6s;
+  transform-style: preserve-3d;
+
+  &.flipped {
+    transform: rotateY(180deg);
+  }
+}
+
+.card-face {
+  position: absolute;
+  backface-visibility: hidden;
+  border-radius: 20px;
+  padding: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+}
+
+.card-back {
+  transform: rotateY(180deg);
+  background: #fdf6ff;
+}
+
+/* ==================================================
+   🧊 DIALOGS (Global look)
+================================================== */
+
+/* Inner animation */
+.q-dialog__inner {
+  animation: dialog-pop 0.35s ease;
+}
+
+/* Main dialog card style */
+.q-dialog .q-card {
+  @include dialog-card-base;
+}
+
+/* Global gradient header for dialogs */
+.q-dialog .q-card > .q-card-section:first-child {
+  @include dialog-header-base;
+  @include gradient-bg($primary, $violet);
+  box-shadow: inset 0 -3px 6px rgba(255, 255, 255, 0.3);
+
+  .q-btn {
+    @include dialog-close-btn;
+  }
+}
+
+/* Body text inside dialog */
+.q-dialog .q-card-section:nth-child(n + 2) {
+  padding: 18px 22px;
+  font-size: 0.95rem;
+  color: $text-muted;
+}
+
+/* List items inside dialogs */
+.q-dialog .q-item {
+  border-radius: 14px;
+  transition: 0.2s;
+
+  &:hover {
+    background: rgba(78, 123, 242, 0.12);
+    transform: translateY(-2px);
+  }
+}
+
+/* Actions row */
+.q-dialog .q-card-actions {
+  padding: 14px 18px;
+  background: #f2f4fa;
+  border-top: 1px solid #ddd;
+  gap: 12px;
+
+  .q-btn {
+    border-radius: 14px !important;
+    padding: 8px 20px !important;
+    font-weight: 600 !important;
+    transition: 0.25s ease;
+
+    &[color='primary'] {
+      @include gradient-bg(#4e7bf2, #6aa3ff);
+      color: white !important;
+    }
+
+    &[color='negative'] {
+      @include gradient-bg(#ff6b6b, #ff8b8b);
+      color: white !important;
+    }
+
+    &[flat] {
+      color: #333 !important;
+      background: transparent !important;
+    }
+
+    &:hover:not(.disabled) {
+      transform: translateY(-2px);
+    }
+  }
+}
+
+/* Orange themed dialog (if you use .dialog-card / .dialog-header classes) */
+.dialog-card {
+  border-radius: 20px !important;
+  background: #ffffffee !important;
+  box-shadow: 0 16px 28px rgba(0, 0, 0, 0.25);
+  animation: dialogPop 0.3s ease;
+}
+
+.dialog-header {
+  @include gradient-bg(#ff9f43, #ff784e);
+  padding: 14px;
+  border-radius: 20px 20px 0 0 !important;
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: white;
+
+  .close-x {
+    @include dialog-close-btn;
+  }
+}
+
+/* Dialog animations */
+@keyframes dialog-pop {
+  0% {
+    transform: scale(0.7) translateY(20px);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes dialogShow {
+  0% {
+    opacity: 0;
+    transform: scale(0.85);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes dialogPop {
+  0% {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Responsive dialog tweaks */
+@media (max-width: 380px) {
+  .q-dialog .q-card {
+    border-radius: 16px !important;
+  }
+
+  .dialog-header {
+    font-size: 1rem !important;
+  }
+
+  .q-dialog .q-card-actions .q-btn {
+    padding: 6px 16px !important;
+  }
+}
+
+/* ==================================================
+   🧭 HEADER, MENU, FOOTER
+================================================== */
+
+.header-beauty {
+  @include gradient-bg(#4e7bf2, #9b59b6);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25) !important;
+}
+
+.header-toolbar {
+  padding: 4px 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.app-logo {
+  background: rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(6px);
+  border: 2px solid rgba(255, 255, 255, 0.35);
+}
+
+.header-title {
+  font-weight: 800;
+  font-size: 1.25rem;
+  letter-spacing: 0.3px;
+  color: white !important;
+}
+
+.menu-btn {
+  color: white !important;
+  transition: 0.2s ease;
+
+  &:hover {
+    transform: scale(1.15);
+  }
+}
+
+/* MENU LIST */
+.menu-list {
+  min-width: 180px;
+  background: #ffffff !important;
+  border-radius: 14px;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+}
+
+.menu-item {
+  border-radius: 12px;
+  transition: 0.2s ease;
+
+  &:hover {
+    background: rgba(78, 123, 242, 0.12);
+    transform: translateX(4px);
+  }
+}
+
+/* FOOTER */
+.footer-beauty {
+  @include gradient-bg(#4e7bf2, #6aa3ff);
+  padding: 8px;
+  text-align: center;
+  color: white !important;
+  box-shadow: 0 -3px 10px rgba(0, 0, 0, 0.2);
+}
+
+.footer-inner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-weight: 600;
+  opacity: 0.9;
+  font-size: 0.85rem;
+}
+
+/* ==================================================
+   🧷 BUBBLE TABS (full + compact)
+================================================== */
+
+.tab-bubble-wrapper {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: 16px;
+}
+
+/* Base style for full-size bubble tabs */
+.tab-btn {
+  padding: 12px 28px !important;
+  border-radius: 22px !important;
+  font-size: 1rem !important;
+  @include bubble-tab-base;
+
+  &:hover {
+    transform: translateY(-4px) scale(1.05);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+  }
+
+  &.active {
+    transform: translateY(-6px) scale(1.12);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.25);
+    border: 2px solid white;
+  }
+}
+
+/* Compact bubble style */
+.tab-btn-xs {
+  padding: 6px 14px !important;
+  border-radius: 14px !important;
+  font-size: 0.75rem !important;
+  min-width: 65px;
+  @include bubble-tab-xs-base;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 12px rgba(0, 0, 0, 0.15);
+  }
+
+  &.active {
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.25);
+    border: 2px solid white;
+  }
+}
+
+/* Generate gradients for full tabs */
+@each $name, $grad in $tab-gradients {
+  .tab-#{$name} {
+    @include gradient-bg(nth($grad, 1), nth($grad, 2));
+  }
+}
+
+/* Generate gradients for compact tabs */
+@each $name, $grad in $tab-gradients-compact {
+  .tab-btn-xs.tab-#{$name} {
+    @include gradient-bg(nth($grad, 1), nth($grad, 2));
+  }
+}
+
+/* Responsive sizes for compact tabs */
+@media (max-width: 360px) {
+  .tab-btn-xs {
+    padding: 4px 10px !important;
+    font-size: 0.7rem !important;
+    min-width: 58px;
+  }
+}
+
+@media (max-width: 450px) {
+  .tab-btn-xs {
+    padding: 5px 12px !important;
+    font-size: 0.74rem !important;
+    min-width: 60px;
+  }
+}
+
+@media (min-width: 768px) {
+  .tab-btn-xs {
+    padding: 8px 18px !important;
+    font-size: 0.85rem !important;
+  }
+}
+
+/* ==================================================
+   🏷️ SECTION TITLE TAGS
+================================================== */
+
+.section-title {
+  display: inline-block;
+  padding: 6px 14px;
+  margin: 10px 0 12px 10px;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 800;
+  color: white;
+  letter-spacing: 0.3px;
+  box-shadow: 0 3px 7px rgba(0, 0, 0, 0.18);
+  transition: transform 0.2s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+  }
+}
+
+/* Auto-variants by nth-of-type (first 4) */
+.section-title:nth-of-type(1) {
+  @include gradient-bg(#4d7bff, #6aa0ff);
+}
+.section-title:nth-of-type(2) {
+  @include gradient-bg(#ff9448, #ff7b33);
+}
+.section-title:nth-of-type(3) {
+  @include gradient-bg(#36c976, #2dbb67);
+}
+.section-title:nth-of-type(4) {
+  @include gradient-bg(#a56bff, #c38aff);
+}
+
+/* Color utility classes: .color-blue / .color-orange / etc. */
+@each $name, $grad in $section-gradients {
+  .section-title.color-#{$name} {
+    @include gradient-bg(nth($grad, 1), nth($grad, 2));
+  }
+}
+
+/* ==================================================
+   🖱️ SCROLLBAR
+================================================== */
+
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: $primary;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #e7ebff;
+}
+
+.list-card {
+  border-radius: 18px !important;
+  box-shadow: 0 6px 14px rgba(78, 123, 242, 0.12);
+  transition: 0.25s ease;
+}
+
+.list-card:hover {
+  transform: translateY(-2px);
+}
+
+.beautiful-list .q-item {
+  border-radius: 12px;
+  transition: 0.25s ease;
+  padding: 6px 10px;
+}
+
+.beautiful-list .q-item:hover {
+  background: rgba(78, 123, 242, 0.12);
+  transform: translateX(4px);
+}
+
+.list-active {
+  background: rgba(78, 123, 242, 0.15);
+  box-shadow: inset 0 0 0 2px var(--primary);
+  border-radius: 12px;
+}
+
+.item-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #1c1c1c;
+}
+
+.item-date {
+  font-size: 0.78rem;
+  color: #60738a;
+  font-weight: 600;
+}
+
+/* Refresh button hover scale */
+.q-btn.pop-hover:hover {
+  transform: scale(1.15);
+}

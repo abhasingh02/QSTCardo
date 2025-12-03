@@ -13,48 +13,74 @@
     <br />
     <div class="q-gutter-sm">
       <div row class="justify-center">
-        <q-btn-toggle
-          glossy
-          v-model="slide"
-          :options="[
-            { label: 'Create', value: 'Create' },
-            { label: 'List', value: 'List' },
-            { label: 'View', value: 'View' },
-            { label: 'Edit', value: 'Edit' },
-          ]"
-        />
+        <!-- ========= Compact Responsive Bubble Tabs ========= -->
+        <div class="row justify-center q-gutter-sm q-mt-sm tab-bubble-wrapper">
+          <q-btn
+            unelevated
+            label="Create"
+            class="tab-btn-xs tab-create"
+            :class="{ active: slide === 'Create' }"
+            @click="slide = 'Create'"
+          />
+
+          <q-btn
+            unelevated
+            label="List"
+            class="tab-btn-xs tab-list"
+            :class="{ active: slide === 'List' }"
+            @click="slide = 'List'"
+          />
+
+          <q-btn
+            unelevated
+            label="View"
+            class="tab-btn-xs tab-view"
+            :class="{ active: slide === 'View' }"
+            @click="slide = 'View'"
+          />
+
+          <q-btn
+            unelevated
+            label="Edit"
+            class="tab-btn-xs tab-edit"
+            :class="{ active: slide === 'Edit' }"
+            @click="slide = 'Edit'"
+          />
+        </div>
         <div>
           <q-carousel animated v-model="slide" infinite height="60vh">
-            <q-carousel-slide name="Create">
-              <q-card v-if="developerMode">
+            <q-carousel-slide name="Create" class="create-slide">
+              <!-- Developer Button -->
+              <q-card v-if="developerMode" class="dev-card">
                 <q-card-section>
-                  <q-btn color="accent" label="Open" @click="openCard" />
+                  <q-btn color="accent" label="Open" @click="openCard" class="pop-btn" />
                 </q-card-section>
               </q-card>
-              <q-card flat bordered>
-                <div class="q-px-md row text-h6 text-accent">Add Flashcard</div>
-                <q-card-section>
+
+              <!-- MAIN CREATE CARD -->
+              <q-card flat bordered class="create-card shadow-1">
+                <div class="section-title color-orange">Add Flashcard</div>
+                <q-card-section class="q-gutter-md compact-sections">
                   <!-- FRONT -->
-                  <div>
+                  <div class="input-block">
                     <q-input
                       :disable="showFrontUploader"
                       v-model="newFront"
                       label="Front"
                       filled
-                      bordered
+                      class="rounded-input"
                     />
-                    <div
-                      class="row items-center q-mb-md cursor-pointer"
-                      @click="showFrontUploader = !showFrontUploader"
-                    >
+
+                    <!-- Toggle Button -->
+                    <div class="toggle-row" @click="showFrontUploader = !showFrontUploader">
                       <q-icon
-                        :name="showFrontUploader ? 'keyboard_arrow_down' : 'chevron_right'"
-                        size="24px"
-                        class="q-mr-sm"
+                        :name="showFrontUploader ? 'keyboard_arrow_down' : 'image'"
+                        size="22px"
                         color="primary"
                       />
-                      <span class="text-subtitle2 text-primary">Add Image (Front)</span>
+                      <span>Add Image (Front)</span>
                     </div>
+
                     <q-slide-transition>
                       <div v-show="showFrontUploader">
                         <q-uploader
@@ -62,10 +88,11 @@
                           accept="image/*"
                           :max-files="1"
                           auto-upload
-                          label="Upload Image on front side"
-                          :factory="() => null"
+                          flat
                           bordered
-                          class="full-width q-mt-sm"
+                          class="rounded-input uploader-box"
+                          label="Upload image"
+                          :factory="() => null"
                           @uploaded="uploaded"
                           @added="(files) => onImageSelected(files, 'front')"
                         />
@@ -74,41 +101,36 @@
                   </div>
 
                   <!-- BACK -->
-                  <div class="col-12 col-sm-6">
+                  <div class="input-block">
                     <q-input
                       :disable="showBackUploader"
                       v-model="newBack"
                       label="Back"
                       filled
-                      bordered
+                      class="rounded-input"
                     />
-                    <q-separator />
-                    <!-- Header row with arrow -->
-                    <div
-                      class="row items-center q-mb-md cursor-pointer"
-                      @click="showBackUploader = !showBackUploader"
-                    >
+
+                    <div class="toggle-row" @click="showBackUploader = !showBackUploader">
                       <q-icon
-                        :name="showBackUploader ? 'keyboard_arrow_down' : 'chevron_right'"
-                        size="24px"
-                        class="q-mr-sm"
+                        :name="showBackUploader ? 'keyboard_arrow_down' : 'image'"
+                        size="22px"
                         color="primary"
                       />
-                      <span class="text-subtitle2 text-primary">Add Image (Back)</span>
+                      <span>Add Image (Back)</span>
                     </div>
 
-                    <!-- Slide transition -->
                     <q-slide-transition>
                       <div v-show="showBackUploader">
                         <q-uploader
                           ref="backUploader"
                           accept="image/*"
                           :max-files="1"
-                          label="Upload Image in back side"
-                          :factory="() => null"
                           auto-upload
+                          flat
                           bordered
-                          class="full-width q-mt-sm"
+                          class="rounded-input uploader-box"
+                          label="Upload image"
+                          :factory="() => null"
                           @uploaded="uploaded"
                           @added="(files) => onImageSelected(files, 'back')"
                         />
@@ -116,107 +138,131 @@
                     </q-slide-transition>
                   </div>
                 </q-card-section>
-                <q-card-actions>
-                  <div class="full-width row justify-end q-gutter-md">
-                    <q-btn color="primary" label="Add" @click="addFlashcard" />
-                    <q-btn color="secondary" label="Clear" flat @click="clearInputs" />
-                  </div>
+
+                <!-- ACTIONS -->
+                <q-card-actions align="right" class="q-gutter-sm action-row">
+                  <q-btn color="primary" label="Add" class="pop-btn" @click="addFlashcard" />
+                  <q-btn
+                    color="secondary"
+                    flat
+                    label="Clear"
+                    class="pop-btn"
+                    @click="clearInputs"
+                  />
                 </q-card-actions>
               </q-card>
-              <br />
-              <div v-if="!isCordova">
-                <q-card flat bordered>
-                  <div class="q-px-md row text-h6 text-accent">Add From Table</div>
+
+              <!-- ADD FROM TABLE -->
+              <div v-if="!isCordova" class="section-gap">
+                <q-card flat bordered class="create-card shadow-1">
+                  <div class="section-title">Add From Table</div>
                   <q-card-section>
                     <q-input
                       v-model="excelPaste"
                       type="textarea"
-                      filled
                       autogrow
-                      label="Paste rows from Excel (Front | Back)"
-                      placeholder="Copy rows from Excel and paste here..."
+                      filled
+                      label="Paste rows (Front | Back)"
+                      class="rounded-input"
                       @paste="handleExcelPaste"
                     />
                   </q-card-section>
-                  <q-card-actions align="right" class="q-gutter-sm">
-                    <q-btn color="primary" label="Append" @click="appendFromTable" />
+                  <q-card-actions align="right">
+                    <q-btn
+                      color="primary"
+                      label="Append"
+                      class="pop-btn"
+                      @click="appendFromTable"
+                    />
+                    <q-btn
+                      color="positive"
+                      label="Generate"
+                      class="pop-btn"
+                      @click="generateFromTable"
+                    />
                   </q-card-actions>
                 </q-card>
-                <br />
               </div>
 
-              <q-card flat bordered>
-                <div class="q-px-md row text-h6 text-accent">Add by Excel file</div>
-                <q-card-section>
-                  <div class="row justify-between items-center q-gutter-sm">
-                    <div class="relative-position">
-                      <q-btn color="primary" icon="upload" label="Upload Excel" flat />
-
-                      <!-- Full overlay over button to catch clicks -->
-                      <input
-                        type="file"
-                        accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel"
-                        @change="handleExcelFile"
-                        style="position: absolute; inset: 0; opacity: 0; cursor: pointer"
-                      />
-                    </div>
-
-                    <q-btn color="primary" label="Generate" @click="generateFromTable" />
+              <!-- EXCEL UPLOAD -->
+              <q-card flat bordered class="create-card shadow-1 section-gap">
+                <div class="section-title color-green">Add by Excel File</div>
+                <q-card-section class="row items-center justify-between q-gutter-sm">
+                  <div class="relative-position upload-btn-wrap">
+                    <q-btn
+                      color="primary"
+                      icon="upload"
+                      label="Upload Excel"
+                      flat
+                      class="pop-btn"
+                    />
+                    <input
+                      type="file"
+                      accept=".xlsx,.xls"
+                      @change="handleExcelFile"
+                      class="absolute-full"
+                      style="opacity: 0; cursor: pointer"
+                    />
                   </div>
                 </q-card-section>
               </q-card>
-              <br />
-              <q-card flat bordered>
-                <!-- ADD FLASHCARD (Front | Back format) -->
-                <div class="q-px-md row text-h6 text-accent">Add by 'Front | Back'</div>
-                <q-card-section>
-                  <div class="row items-center q-gutter-sm">
-                    <q-input
-                      v-model="frontBack"
-                      label="Front | Back"
-                      placeholder="e.g. What is CPU? | Central Processing Unit"
-                      dense
-                      outlined
-                      filled
-                      class="col"
-                      clearable
-                    />
 
-                    <q-btn color="primary" label="Add" @click="addCard" />
-                  </div>
+              <!-- QUICK ADD -->
+              <q-card flat bordered class="create-card shadow-1 section-gap">
+                <div class="section-title color-purple">Quick Add (Front | Back)</div>
+                <q-card-section class="row items-center q-gutter-sm">
+                  <q-input
+                    v-model="frontBack"
+                    label="Front | Back"
+                    filled
+                    dense
+                    class="rounded-input col"
+                    clearable
+                  />
+                  <q-btn color="primary" label="Add" class="pop-btn" @click="addCard" />
                 </q-card-section>
               </q-card>
             </q-carousel-slide>
             <q-carousel-slide name="List">
-              <div class="list-and-view q-gutter-md">
-                <q-card flat bordered class="list q-pa-sm">
-                  <q-card-section class="row justify-between items-center text-h6">
-                    <span>Saved Files ({{ showCards?.length }})</span>
-                    <q-btn flat icon="refresh" @click="refreshCards" />
+              <div class="list-and-view q-gutter-md flex flex-center">
+                <q-card bordered class="list list-card q-pa-sm">
+                  <q-card-section class="row justify-between items-center">
+                    <div class="text-h6 text-primary section-title color-blue">
+                      Saved Files ({{ showCards?.length }})
+                    </div>
+                    <q-btn
+                      flat
+                      icon="refresh"
+                      class="pop-hover text-accent"
+                      @click="refreshCards"
+                    />
                   </q-card-section>
 
-                  <q-list v-if="showCards?.length" separator bordered>
+                  <q-list v-if="showCards?.length" bordered separator class="beautiful-list">
                     <q-item
                       v-for="card in showCards"
                       :key="card.id"
                       clickable
                       :active="card.id === activeId"
-                      active-class="bg-blue-1"
+                      active-class="list-active"
                       @click="clickedFile(card)"
+                      class="smooth-hover"
                     >
-                      <!-- MAIN TEXT -->
                       <q-item-section>
-                        <div class="text-weight-bold cursor-pointer">
+                        <div class="item-title">
                           {{ card.name }}
                         </div>
                       </q-item-section>
-                      <q-item-section>
-                        <div class="text-caption text-grey-7">
+                      <q-item-section side>
+                        <div class="item-date">
                           {{ formatTimestamp(card.createdAt) }}
                         </div>
                       </q-item-section>
                     </q-item>
                   </q-list>
+                  <div v-else class="text-center text-grey q-pa-md text-subtitle1">
+                    No files saved yet
+                  </div>
                 </q-card>
               </div>
             </q-carousel-slide>
@@ -297,8 +343,10 @@
               <div class="list-and-view q-gutter-md">
                 <q-card flat bordered class="list q-pa-xs">
                   <q-card-section class="row items-center justify-between q-pa-sm bg-grey-2">
-                    <section class="col q-ml-lg text-purple items-center">
-                      <div class="text-h6">List ({{ filtered.length }})</div>
+                    <section class="col text-purple items-center">
+                      <div class="text-bold q-ml-md">
+                        {{ selectedIds.length + '/' + filtered.length }}
+                      </div>
                     </section>
                     <section>
                       <div class="col">
@@ -358,7 +406,7 @@
                       <!-- MAIN TEXT -->
                       <q-item-section>
                         <div class="text-weight-medium">
-                          {{ card.frontText }}
+                          {{ card.frontText || card.backText }}
                         </div>
                       </q-item-section>
 
@@ -598,7 +646,15 @@ function addCard() {
   if (!text.includes('|')) {
     return $q.notify({
       type: 'warning',
+      position: 'center',
       message: 'Use Front | Back format',
+      actions: [
+        {
+          label: 'OK',
+          color: 'white',
+          handler: () => {},
+        },
+      ],
     })
   }
 
@@ -646,7 +702,7 @@ onMounted(() => {
     type: 'info',
     persistent: true,
     message: 'Tap the card to see back side',
-    position: 'top',
+    position: 'center',
     timeout: 0, // stays until user clicks OK
     actions: [
       {
@@ -719,7 +775,18 @@ function askColumnSelection() {
 }
 function confirmColumnSelection() {
   if (!frontCol.value || !backCol.value) {
-    $q.notify({ type: 'warning', message: 'Please select both columns' })
+    $q.notify({
+      type: 'warning',
+      position: 'center',
+      message: 'Please select both columns',
+      actions: [
+        {
+          label: 'OK',
+          color: 'white',
+          handler: () => {},
+        },
+      ],
+    })
     return
   }
 
@@ -746,10 +813,7 @@ function createFlashcardsFromExcel(frontCol, backCol) {
   flashcards.value = list
   activeId.value = list.length ? list[0].id : null
 
-  $q.notify({
-    type: 'positive',
-    message: `Imported ${list.length} flashcards`,
-  })
+  openPostDialog.value = true
 }
 
 function handleExcelPaste() {
@@ -786,6 +850,7 @@ function generateFromTable() {
   if (!list.length) return
   flashcards.value = list
   activeId.value = flashcards.value[0].id
+  openPostDialog.value = true
 }
 function appendFromTable() {
   const list = tableRows.value
@@ -825,12 +890,11 @@ watch(selectedIds, () => {
 })
 
 watch(selectAll, (val) => {
-  console.log('selectAll changed', val)
   if (val) {
     $q.notify({
       type: 'warning',
       message: 'All cards selected',
-      position: 'top',
+      position: 'center',
       timeout: 0, // stays until user clicks OK
       actions: [
         {
@@ -944,7 +1008,18 @@ function toggleSelectAll() {
 
 function deleteSelected() {
   if (selectedIds.value.length === 0) {
-    $q.notify({ type: 'warning', message: 'No card selected to delete' })
+    $q.notify({
+      type: 'warning',
+      position: 'center',
+      message: 'No card selected to delete',
+      actions: [
+        {
+          label: 'OK',
+          color: 'white',
+          handler: () => {},
+        },
+      ],
+    })
     return
   } else if (selectedIds.value.length === filtered.value.length) {
     $q.dialog({
@@ -991,7 +1066,18 @@ function deleteSelected() {
 
 function viewSelected() {
   if (selectedIds.value.length === 0) {
-    $q.notify({ type: 'warning', message: 'No card selected to view' })
+    $q.notify({
+      type: 'warning',
+      position: 'center',
+      message: 'No card selected to view',
+      actions: [
+        {
+          label: 'OK',
+          color: 'white',
+          handler: () => {},
+        },
+      ],
+    })
     return
   } else {
     $q.dialog({
@@ -1003,7 +1089,18 @@ function viewSelected() {
     }).onOk(() => {
       const selectedCards = flashcards.value.filter((c) => selectedIds.value.includes(c.id))
       if (selectedCards.length === 0) {
-        $q.notify({ type: 'warning', message: 'Selected cards not found' })
+        $q.notify({
+          type: 'warning',
+          position: 'center',
+          message: 'Selected cards not found',
+          actions: [
+            {
+              label: 'OK',
+              color: 'white',
+              handler: () => {},
+            },
+          ],
+        })
         return
       }
       flashcards.value = selectedCards
