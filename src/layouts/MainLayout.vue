@@ -10,7 +10,7 @@
 
         <!-- TITLE -->
         <q-toolbar-title class="header-title"> QSTCardo </q-toolbar-title>
-
+        <q-btn v-if="developerMode" @click="resetApp()">reset</q-btn>
         <!-- MENU -->
         <q-btn flat icon="menu">
           <q-menu transition-show="jump-down" transition-hide="jump-up">
@@ -80,15 +80,22 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useQuasar } from 'quasar'
 import CryptoJS from 'crypto-js'
 import Filemixin from '../mixins/Filemixin.js'
+import { useCardStore } from 'src/stores/cardStore'
+const store = useCardStore()
 
 const router = useRouter()
 const $q = useQuasar()
+const developerMode = ref(false)
 
+onMounted(() => {})
+function resetApp() {
+  store.reset()
+}
 const showLogoutDialog = ref(false)
 
 const { exportFile } = Filemixin()
