@@ -299,6 +299,7 @@
                 <div class="text-center q-mb-sm text-accent">
                   {{ isChinese ? active.pinyin : '' }}
                 </div>
+                {{ active }}
                 <div class="row items-center justify-between no-wrap">
                   <q-btn size="md" flat icon="arrow_left" color="accent" @click="prevCard" />
 
@@ -931,7 +932,9 @@ const speak = () => {
     return
   }
   if (!isCordova) {
-    const utterance = new SpeechSynthesisUtterance(active.value.frontText || active.value.backText)
+    const utterance = new SpeechSynthesisUtterance(
+      active.value[0].frontText || active.value[0].backText,
+    )
     utterance.lang = selectedLanguage.value?.tts || 'en-US'
     utterance.pitch = 1
     utterance.rate = 0.5
@@ -939,12 +942,12 @@ const speak = () => {
     $q.notify({
       type: 'positive',
       color: 'blue',
-      message: 'Speaking ' + active.value.frontText || active.value.backText,
+      message: 'Speaking ' + active.value[0].frontText || active.value[0].backText,
     })
   } else {
     TTS.speak(
       {
-        text: active.value.frontText || active.value.backText,
+        text: active.value[0].frontText || active.value[0].backText,
         locale: selectedLanguage.value?.tts || 'en-US',
         rate: 0.8,
       },
@@ -952,7 +955,7 @@ const speak = () => {
         $q.notify({
           type: 'positive',
           color: 'blue',
-          message: 'Speaking ' + (active.value.frontText || active.value.backText),
+          message: 'Speaking ' + (active.value[0].frontText || active.value[0].backText),
         })
       },
       () => {
@@ -1214,11 +1217,14 @@ const filtered = computed(() => {
 })
 
 const active = computed(() => {
+  store.getFlashcard()
+  console.log('flashcards', flashcards.value, activeId.value)
+
   const cardView =
-    (flashcards.value &&
+    (flashcards.value?.data &&
       activeId.value &&
-      flashcards.value.filter((c) => c.id === activeId.value)) ||
-    flashcards.value.id
+      flashcards.value?.filter((c) => c.id === activeId.value)) ||
+    flashcards.value[0]
   return cardView || null
 })
 const activeIndex = computed(() => {
@@ -1226,7 +1232,8 @@ const activeIndex = computed(() => {
     0,
     flashcards.value &&
       flashcards.value?.data?.findIndex(
-        (c) => c.id === (activeId.value || (flashcards.value[0] && flashcards.value[0].id)),
+        (c) =>
+          c.id === (activeId.value || (flashcards.value?.data[0] && flashcards.value?.data[0].id)),
       ),
   )
 })
