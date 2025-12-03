@@ -198,7 +198,7 @@
                     />
                     <input
                       type="file"
-                      accept=".xlsx,.xls"
+                      accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel"
                       @change="handleExcelFile"
                       class="absolute-full"
                       style="opacity: 0; cursor: pointer"
@@ -294,7 +294,7 @@
                       </q-item>
                     </q-list>
                   </q-btn-dropdown>
-                  <q-btn color="primary" icon="volume_up" flat @click="speak" />
+                  <q-btn color="primary" icon="volume_up" flat @click="speak(active)" />
                 </div>
                 <div class="text-center q-mb-sm text-accent">
                   {{ isChinese ? active.pinyin : '' }}
@@ -336,7 +336,7 @@
                 </div>
               </div>
 
-              <div v-else>No card to view</div>
+              <div v-else class="no-card-center">No card to view</div>
             </q-carousel-slide>
 
             <q-carousel-slide name="Edit">
@@ -345,7 +345,7 @@
                   <q-card-section class="row items-center justify-between q-pa-sm bg-grey-2">
                     <section class="col text-purple items-center">
                       <div class="text-bold q-ml-md">
-                        {{ selectedIds.length + '/' + filtered.length }}
+                        {{ selectedIds.length + '/' + filtered?.length }}
                       </div>
                     </section>
                     <section>
@@ -548,16 +548,14 @@
 <script setup>
 /* global TTS */
 import { ref, computed, watch, onMounted, onBeforeUnmount } from 'vue'
-import { useRouter } from 'vue-router'
 import { useQuasar } from 'quasar'
 import * as XLSX from 'xlsx'
-import { useCharacterStore } from 'src/stores/characterStore'
-import ImportExportMixin from 'src/mixins/import-export-mixin.js'
+import { useCardStore } from 'src/stores/cardStore'
+import ImportExportMixin from 'src/mixins/Filemixin.js'
 const { exportFile, loadExistingBackupsToStore, deleteBackup } = ImportExportMixin()
 
 const developerMode = ref(false)
-const store = useCharacterStore()
-const router = useRouter()
+const store = useCardStore()
 const $q = useQuasar()
 const languageList = store.languageList
 const selectedLanguage = ref(null)
@@ -570,7 +568,7 @@ const selectAll = ref(false)
 const excelData = ref([]) // parsed Excel rows
 const excelColumns = ref([]) // column names from Excel
 const excelColumnOptions = ref([]) // Quasar select-friendly options
-const flashcards = ref(loadFromStorage()) || []
+const flashcards = ref(store.currentFlashcard) || []
 const newFront = ref('')
 const newBack = ref('')
 const frontBack = ref('')
@@ -696,7 +694,8 @@ function clearInputs() {
 }
 
 onMounted(() => {
-  store.setFlashcards()
+  store.getFlashcards()
+  refreshCards()
   window.addEventListener('keydown', handleArrow)
   $q.notify({
     type: 'info',
@@ -720,7 +719,7 @@ onBeforeUnmount(() => {
 
 function refreshCards() {
   if (!isCordova) {
-    store.setFlashcards()
+    store.getFlashcards()
   } else {
     loadExistingBackupsToStore()
   }
@@ -910,28 +909,15 @@ watch(selectAll, (val) => {
 watch(flashcards, (val) => saveToStorage(val), { deep: true })
 watch(slide, (val) => {
   if (val === 'List') {
-    store.setFlashcards()
+    store.getFlashcards()
   }
 })
 
-function loadFromStorage() {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY) || []
-    if (!raw) {
-      return []
-    } else {
-      return JSON.parse(raw)
-    }
-  } catch (e) {
-    console.warn('Failed to load flashcards', e)
-    return []
-  }
-}
 const selectLanguage = (lang) => {
   selectedLanguage.value = lang
 }
 
-const speak = () => {
+const speak = (active) => {
   if (!selectedLanguage.value) {
     $q.dialog({
       message: `Please Select language`,
@@ -946,7 +932,7 @@ const speak = () => {
     return
   }
   if (!isCordova) {
-    const utterance = new SpeechSynthesisUtterance(active.value.frontText || active.value.backText)
+    const utterance = new SpeechSynthesisUtterance(active.frontText || active.backText)
     utterance.lang = selectedLanguage.value?.tts || 'en-US'
     utterance.pitch = 1
     utterance.rate = 0.5
@@ -954,12 +940,16 @@ const speak = () => {
     $q.notify({
       type: 'positive',
       color: 'blue',
-      message: 'Speaking ' + active.value.frontText || active.value.backText,
+      message: 'Speaking ' + active.frontText || active.backText,
     })
   } else {
     TTS.speak(
       {
-        text: active.value.frontText || active.value.backText,
+        text: active.frontText
+          ? active.frontText
+          : active[0].frontText || active.backText
+            ? active.backText
+            : active[0].backText,
         locale: selectedLanguage.value?.tts || 'en-US',
         rate: 0.8,
       },
@@ -967,7 +957,12 @@ const speak = () => {
         $q.notify({
           type: 'positive',
           color: 'blue',
-          message: 'Speaking ' + (active.value.frontText || active.value.backText),
+          message:
+            'Speaking ' + active.frontText
+              ? active.frontText
+              : active[0].frontText || active.backText
+                ? active.backText
+                : active[0].backText,
         })
       },
       () => {
@@ -981,7 +976,7 @@ const speak = () => {
 }
 
 const showCards = computed(() => {
-  const selectCards = store.savedFlashcards
+  const selectCards = store.listFiles
   const cards = selectCards && selectCards.length ? selectCards : []
   return cards
 })
@@ -1131,7 +1126,6 @@ function cancelEdit() {
 }
 
 function clickedFile(selected) {
-  console.log('selected', selected, store.savedFlashcards)
   selectedFile.value = selected
   openDialog.value = true
 }
@@ -1141,8 +1135,11 @@ function deleteFile() {
 }
 
 function openFile() {
-  flashcards.value = selectedFile.value.data
+  const selectedCard = store.savedFlashcards.find((f) => f.name === selectedFile.value.name)
+  flashcards.value = selectedCard.data
+  store.setFlashcard(selectedCard)
   openDialog.value = false
+  refreshCards()
 }
 
 function openCard(selected) {
@@ -1221,23 +1218,26 @@ function formatTimestamp(ts) {
 const filtered = computed(() => {
   const q = (query.value || '').toLowerCase().trim()
   if (!q) return flashcards.value
-  return flashcards.value?.data[0].filter(
+  return flashcards.value[0].filter(
     (c) =>
       (c.frontText || '').toLowerCase().includes(q) || (c.backText || '').toLowerCase().includes(q),
   )
 })
 
 const active = computed(() => {
-  const cardView = flashcards.value && flashcards.value.find((c) => c.id === activeId.value)
-  if (activeId.value) router.replace(`/flashcard/${activeId.value}`)
+  store.getFlashcard()
+  const cardView =
+    (flashcards.value && activeId.value && flashcards.value.find((c) => c.id === activeId.value)) ||
+    flashcards.value[0]
   return cardView || null
 })
 const activeIndex = computed(() => {
   return Math.max(
     0,
-    flashcards.value.findIndex(
-      (c) => c.id === (activeId.value || (flashcards.value[0] && flashcards.value[0].id)),
-    ),
+    flashcards.value &&
+      flashcards.value?.findIndex(
+        (c) => c.id === (activeId.value || (flashcards.value[0] && flashcards.value[0].id)),
+      ),
   )
 })
 

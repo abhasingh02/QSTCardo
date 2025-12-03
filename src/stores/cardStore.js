@@ -1,8 +1,10 @@
 import { defineStore } from 'pinia'
 
-export const useCharacterStore = defineStore('character', {
+export const useCardStore = defineStore('card', {
   state: () => ({
     savedFlashcards: [],
+    currentFlashcard: [],
+    listFiles: [],
     selectedFile: [],
     languageList: [
       { name: 'Hindi', tts: 'hi-IN' },
@@ -35,8 +37,21 @@ export const useCharacterStore = defineStore('character', {
   }),
 
   actions: {
+    reset() {
+      this.savedFlashcards = []
+      this.currentFlashcard = []
+      this.listFiles = []
+      this.selectedFile = []
+      localStorage.setItem('list-of-file', [])
+      localStorage.setItem('flashcards', [])
+      localStorage.getItem('list-of-file', [])
+      localStorage.getItem('flashcards', [])
+    },
     getFlashcards() {
-      this.savedFlashcards = JSON.parse(localStorage.getItem('list-of-file'))
+      this.savedFlashcards =
+        (localStorage.getItem('list-of-file') &&
+          JSON.parse(localStorage.getItem('list-of-file'))) ||
+        []
       return this.savedFlashcards
     },
     setFlashcards(flashcards) {
@@ -52,10 +67,23 @@ export const useCharacterStore = defineStore('character', {
         this.savedFlashcards = files
       }
       if (flashcards) {
-        this.savedFlashcards.find((f) => f.filename === flashcards.filename) ||
+        const index = this.savedFlashcards.findIndex((f) => f.filename === flashcards.filename)
+
+        if (index !== -1) {
+          this.savedFlashcards[index] = flashcards
+        } else {
           this.savedFlashcards.push(flashcards)
+        }
       }
       localStorage.setItem('list-of-file', JSON.stringify(this.savedFlashcards))
+    },
+    getFlashcard() {
+      this.currentFlashcard = JSON.parse(localStorage.getItem('flashcards'))
+      return this.currentFlashcard
+    },
+    setFlashcard(flashcard) {
+      this.currentFlashcard = flashcard
+      localStorage.setItem('flashcards', JSON.stringify(this.currentFlashcard))
     },
   },
 })

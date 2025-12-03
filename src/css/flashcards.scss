@@ -819,3 +819,34 @@ textarea {
 .q-btn.pop-hover:hover {
   transform: scale(1.15);
 }
+
+.no-card-center {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #888;
+  text-align: center;
+
+  opacity: 0.8;
+  letter-spacing: 0.5px;
+
+  /* Optional soft fade animation */
+  animation: fadeIn 0.4s ease-out;
+}
+
+/* Soft fade animation */
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  100% {
+    opacity: 0.8;
+    transform: translateY(0);
+  }
+}
