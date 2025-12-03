@@ -345,7 +345,7 @@
                   <q-card-section class="row items-center justify-between q-pa-sm bg-grey-2">
                     <section class="col text-purple items-center">
                       <div class="text-bold q-ml-md">
-                        {{ selectedIds.length + '/' + filtered.length }}
+                        {{ selectedIds.length + '/' + filtered?.length }}
                       </div>
                     </section>
                     <section>
@@ -548,7 +548,6 @@
 <script setup>
 /* global TTS */
 import { ref, computed, watch, onMounted, onBeforeUnmount } from 'vue'
-import { useRouter } from 'vue-router'
 import { useQuasar } from 'quasar'
 import * as XLSX from 'xlsx'
 import { useCardStore } from 'src/stores/cardStore'
@@ -557,7 +556,6 @@ const { exportFile, loadExistingBackupsToStore, deleteBackup } = ImportExportMix
 
 const developerMode = ref(false)
 const store = useCardStore()
-const router = useRouter()
 const $q = useQuasar()
 const languageList = store.languageList
 const selectedLanguage = ref(null)
@@ -696,7 +694,7 @@ function clearInputs() {
 }
 
 onMounted(() => {
-  store.setFlashcards()
+  store.getFlashcards()
   window.addEventListener('keydown', handleArrow)
   $q.notify({
     type: 'info',
@@ -720,7 +718,7 @@ onBeforeUnmount(() => {
 
 function refreshCards() {
   if (!isCordova) {
-    store.setFlashcards()
+    store.getFlashcards()
   } else {
     loadExistingBackupsToStore()
   }
@@ -910,7 +908,7 @@ watch(selectAll, (val) => {
 watch(flashcards, (val) => saveToStorage(val), { deep: true })
 watch(slide, (val) => {
   if (val === 'List') {
-    store.setFlashcards()
+    store.getFlashcards()
   }
 })
 
@@ -981,7 +979,7 @@ const speak = () => {
 }
 
 const showCards = computed(() => {
-  const selectCards = store.savedFlashcards
+  const selectCards = store.listFiles
   const cards = selectCards && selectCards.length ? selectCards : []
   return cards
 })
@@ -1131,7 +1129,6 @@ function cancelEdit() {
 }
 
 function clickedFile(selected) {
-  console.log('selected', selected, store.savedFlashcards, '====', flashcards)
   selectedFile.value = selected
   openDialog.value = true
 }
@@ -1141,7 +1138,7 @@ function deleteFile() {
 }
 
 function openFile() {
-  flashcards.value = selectedFile.value.data
+  flashcards.value = store.savedFlashcards.find((f) => f.name === selectedFile.value.name)
   openDialog.value = false
 }
 
@@ -1228,16 +1225,20 @@ const filtered = computed(() => {
 })
 
 const active = computed(() => {
-  const cardView = flashcards.value && flashcards.value.find((c) => c.id === activeId.value)
-  if (activeId.value) router.replace(`/flashcard/${activeId.value}`)
+  const cardView =
+    (flashcards.value &&
+      activeId.value &&
+      flashcards.value.filter((c) => c.id === activeId.value)) ||
+    flashcards.value.id
   return cardView || null
 })
 const activeIndex = computed(() => {
   return Math.max(
     0,
-    flashcards.value.findIndex(
-      (c) => c.id === (activeId.value || (flashcards.value[0] && flashcards.value[0].id)),
-    ),
+    flashcards.value &&
+      flashcards.value?.data?.findIndex(
+        (c) => c.id === (activeId.value || (flashcards.value[0] && flashcards.value[0].id)),
+      ),
   )
 })
 

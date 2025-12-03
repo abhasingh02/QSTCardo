@@ -90,6 +90,7 @@ const store = useCardStore()
 
 const router = useRouter()
 const $q = useQuasar()
+// const developerMode = ref(true)
 const developerMode = ref(false)
 
 onMounted(() => {})
