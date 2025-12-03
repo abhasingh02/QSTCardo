@@ -223,37 +223,46 @@
                 </q-card-section>
               </q-card>
             </q-carousel-slide>
-
             <q-carousel-slide name="List">
-              <div class="list-and-view q-gutter-md">
-                <q-card flat bordered class="list q-pa-sm">
-                  <q-card-section class="row justify-between items-center text-h6">
-                    <span>Saved Files ({{ showCards?.length }})</span>
-                    <q-btn flat icon="refresh" @click="refreshCards" />
+              <div class="list-and-view q-gutter-md flex flex-center">
+                <q-card bordered class="list list-card q-pa-sm">
+                  <q-card-section class="row justify-between items-center">
+                    <div class="text-h6 text-primary section-title color-blue">
+                      Saved Files ({{ showCards?.length }})
+                    </div>
+                    <q-btn
+                      flat
+                      icon="refresh"
+                      class="pop-hover text-accent"
+                      @click="refreshCards"
+                    />
                   </q-card-section>
 
-                  <q-list v-if="showCards?.length" separator bordered>
+                  <q-list v-if="showCards?.length" bordered separator class="beautiful-list">
                     <q-item
                       v-for="card in showCards"
                       :key="card.id"
                       clickable
                       :active="card.id === activeId"
-                      active-class="bg-blue-1"
+                      active-class="list-active"
                       @click="clickedFile(card)"
+                      class="smooth-hover"
                     >
-                      <!-- MAIN TEXT -->
                       <q-item-section>
-                        <div class="text-weight-bold cursor-pointer">
+                        <div class="item-title">
                           {{ card.name }}
                         </div>
                       </q-item-section>
-                      <q-item-section>
-                        <div class="text-caption text-grey-7">
+                      <q-item-section side>
+                        <div class="item-date">
                           {{ formatTimestamp(card.createdAt) }}
                         </div>
                       </q-item-section>
                     </q-item>
                   </q-list>
+                  <div v-else class="text-center text-grey q-pa-md text-subtitle1">
+                    No files saved yet
+                  </div>
                 </q-card>
               </div>
             </q-carousel-slide>
@@ -881,7 +890,6 @@ watch(selectedIds, () => {
 })
 
 watch(selectAll, (val) => {
-  console.log('selectAll changed', val)
   if (val) {
     $q.notify({
       type: 'warning',
