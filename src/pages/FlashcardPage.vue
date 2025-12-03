@@ -198,7 +198,7 @@
                     />
                     <input
                       type="file"
-                      accept=".xlsx,.xls"
+                      accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel"
                       @change="handleExcelFile"
                       class="absolute-full"
                       style="opacity: 0; cursor: pointer"
@@ -551,12 +551,12 @@ import { ref, computed, watch, onMounted, onBeforeUnmount } from 'vue'
 import { useRouter } from 'vue-router'
 import { useQuasar } from 'quasar'
 import * as XLSX from 'xlsx'
-import { useCharacterStore } from 'src/stores/characterStore'
-import ImportExportMixin from 'src/mixins/import-export-mixin.js'
+import { useCardStore } from 'src/stores/cardStore'
+import ImportExportMixin from 'src/mixins/Filemixin.js'
 const { exportFile, loadExistingBackupsToStore, deleteBackup } = ImportExportMixin()
 
 const developerMode = ref(false)
-const store = useCharacterStore()
+const store = useCardStore()
 const router = useRouter()
 const $q = useQuasar()
 const languageList = store.languageList
@@ -1131,7 +1131,7 @@ function cancelEdit() {
 }
 
 function clickedFile(selected) {
-  console.log('selected', selected, store.savedFlashcards)
+  console.log('selected', selected, store.savedFlashcards, '====', flashcards)
   selectedFile.value = selected
   openDialog.value = true
 }
