@@ -62,6 +62,7 @@ export default function useFileMixin() {
                 id: Date.now().toString(36) + Math.random().toString(36).slice(2, 8),
               }
               store.setFlashcards(fileObj)
+              store.setFlashcard(fileObj)
               $q.notify({ type: 'positive', message: `Flashcard ${fileObj.name} saved` })
             }
             writer.onerror = (err) => console.log('Writer error:', err)
@@ -85,13 +86,17 @@ export default function useFileMixin() {
         const reader = qstDir.createReader()
         reader.readEntries((entries) => {
           const jsonFiles = entries.filter((e) => e.isFile && e.name.endsWith('.json'))
+          store.listFiles = jsonFiles.map((f) => {
+            const saved = store.savedFlashcards.find((sf) => sf.filename === f.filename)
+            console.log('=loadExistingBackupsToStore==', jsonFiles, store.savedFlashcards)
 
-          store.savedFlashcards = jsonFiles.map((f) => ({
-            name: f.name.replace('.json', ''),
-            filename: f.filename,
-            path: f.nativeURL,
-            createdAt: Date.now(),
-          }))
+            return {
+              name: f.name.replace('.json', '') || '',
+              filename: f.name || '',
+              path: f.nativeURL || [],
+              createdAt: saved?.createdAt || null, // add property
+            }
+          })
         })
       })
     })
@@ -104,6 +109,7 @@ export default function useFileMixin() {
     const list = store.savedFlashcards || []
     // Find the file object using selected value
     const fileObj = list.length && list.find((f) => f.path === selected.path)
+    // const fileObj = selected
     if (!fileObj) {
       return $q.notify({ type: 'warning', message: 'Selected backup not found' })
     }
