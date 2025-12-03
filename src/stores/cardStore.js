@@ -75,8 +75,6 @@ export const useCardStore = defineStore('card', {
           this.savedFlashcards.push(flashcards)
         }
       }
-      console.log('savedFlashcards', this.savedFlashcards)
-
       localStorage.setItem('list-of-file', JSON.stringify(this.savedFlashcards))
     },
     getFlashcard() {
@@ -85,8 +83,6 @@ export const useCardStore = defineStore('card', {
     },
     setFlashcard(flashcard) {
       this.currentFlashcard = flashcard
-      console.log('setFlashcard', this.currentFlashcard)
-
       localStorage.setItem('flashcards', JSON.stringify(this.currentFlashcard))
     },
   },

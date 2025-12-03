@@ -695,6 +695,7 @@ function clearInputs() {
 
 onMounted(() => {
   store.getFlashcards()
+  refreshCards()
   window.addEventListener('keydown', handleArrow)
   $q.notify({
     type: 'info',
@@ -1138,6 +1139,7 @@ function openFile() {
   flashcards.value = selectedCard.data
   store.setFlashcard(selectedCard)
   openDialog.value = false
+  refreshCards()
 }
 
 function openCard(selected) {
