@@ -5,8 +5,8 @@
   "cordova": {
     "id": "com.qstcardo.app",
     "platforms": [
-      "android",
-      "ios"
+      "ios",
+      "android"
     ],
     "plugins": {
       "cordova-plugin-fingerprint-aio": {},
@@ -17,7 +17,9 @@
       "com-darryncampbell-cordova-plugin-intent": {},
       "cordova-plugin-android-permissions": {},
       "cordova-plugin-device": {},
-      "cordova-plugin-appinfo": {}
+      "cordova-plugin-appinfo": {},
+      "cordova-plugin-file-opener2": {},
+      "cordova-plugin-splashscreen": {}
     }
   },
   "description": "A sample Apache Cordova application that responds to the deviceready event.",
@@ -39,9 +41,11 @@
     "cordova-ios": "^8.0.0",
     "cordova-plugin-appinfo": "^2.1.2",
     "cordova-plugin-device": "^3.0.0",
+    "cordova-plugin-file-opener2": "^4.0.0",
     "cordova-plugin-file-transfer": "^2.0.0",
     "cordova-plugin-fingerprint-aio": "^6.0.1",
     "cordova-plugin-intent": "^0.1.2",
+    "cordova-plugin-splashscreen": "^6.0.1",
     "cordova-plugin-tts": "^0.2.3"
   }
 }

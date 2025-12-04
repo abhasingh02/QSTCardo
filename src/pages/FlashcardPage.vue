@@ -710,7 +710,17 @@ function clearInputs() {
     backUploader.value.reset()
   }
 }
+onMounted(() => {
+  window.addEventListener('external-excel-received', onExternalExcel)
+})
 
+async function onExternalExcel(e) {
+  const fileUri = e.detail.fileUri
+  console.log('Received Excel via Open With:', fileUri)
+
+  const file = await convertUriToFile(fileUri)
+  if (file) handleExcelFile({ target: { files: [file] } })
+}
 onMounted(() => {
   store.getFlashcards()
   refreshCards()
@@ -741,6 +751,17 @@ function refreshCards() {
   } else {
     loadExistingBackupsToStore()
   }
+}
+function convertUriToFile(uri) {
+  return new Promise((resolve, reject) => {
+    window.resolveLocalFileSystemURL(
+      uri,
+      (entry) => {
+        entry.file(resolve, reject)
+      },
+      reject,
+    )
+  })
 }
 
 function handleExcelFile(event) {
