@@ -14,7 +14,7 @@
     <div class="q-gutter-sm">
       <div row class="justify-center">
         <!-- ========= Compact Responsive Bubble Tabs ========= -->
-        <div class="row justify-center q-gutter-sm q-mt-sm tab-bubble-wrapper">
+        <div class="row justify-center q-gutter-sm q-ma-sm tab-bubble-wrapper">
           <q-btn
             unelevated
             label="Create"
@@ -22,15 +22,6 @@
             :class="{ active: slide === 'Create' }"
             @click="slide = 'Create'"
           />
-
-          <q-btn
-            unelevated
-            label="List"
-            class="tab-btn-xs tab-list"
-            :class="{ active: slide === 'List' }"
-            @click="slide = 'List'"
-          />
-
           <q-btn
             unelevated
             label="View"
@@ -38,13 +29,19 @@
             :class="{ active: slide === 'View' }"
             @click="slide = 'View'"
           />
-
           <q-btn
             unelevated
             label="Edit"
             class="tab-btn-xs tab-edit"
             :class="{ active: slide === 'Edit' }"
             @click="slide = 'Edit'"
+          />
+          <q-btn
+            unelevated
+            label="List"
+            class="tab-btn-xs tab-list"
+            :class="{ active: slide === 'List' }"
+            @click="slide = 'List'"
           />
         </div>
         <div>
@@ -227,7 +224,7 @@
               <div class="list-and-view q-gutter-md flex flex-center">
                 <q-card bordered class="list list-card q-pa-sm">
                   <q-card-section class="row justify-between items-center">
-                    <div class="text-h6 text-primary section-title color-blue">
+                    <div class="text-h6 text-white section-title color-blue">
                       Saved Files ({{ showCards?.length }})
                     </div>
                     <q-btn
@@ -338,13 +335,12 @@
 
               <div v-else class="no-card-center">No card to view</div>
             </q-carousel-slide>
-
             <q-carousel-slide name="Edit">
               <div class="list-and-view q-gutter-md">
                 <q-card flat bordered class="list q-pa-xs">
                   <q-card-section class="row items-center justify-between q-pa-sm bg-grey-2">
                     <section class="col text-purple items-center">
-                      <div class="text-bold q-ml-md">
+                      <div class="text-bold q-mx-sm">
                         {{ selectedIds.length + '/' + filtered?.length }}
                       </div>
                     </section>
