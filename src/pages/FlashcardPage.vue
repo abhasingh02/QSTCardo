@@ -265,11 +265,9 @@
             </q-carousel-slide>
             <q-carousel-slide name="View">
               <div v-if="active">
-                <!-- NAV BUTTONS -->
-                <div class="nav-buttons">
-                  <q-btn color="primary" outline label="⟨ Prev" @click="prevCard" />
-                  <q-btn color="primary" outline label="Next ⟩" @click="nextCard" />
-                  <div class="text-caption">{{ activeIndex + 1 }} / {{ flashcards.length }}</div>
+                <div class="row justify-center q-gutter-sm">
+                  <q-toggle v-model="shuffleMode" color="primary" label="Shuffle" />
+                  <q-toggle v-model="swapMode" color="accent" label="Swap Front/Back" />
                 </div>
                 <div class="text-center q-mb-sm">
                   <q-btn-dropdown
@@ -334,6 +332,10 @@
               </div>
 
               <div v-else class="no-card-center">No card to view</div>
+              <div class="text-center q-ma-sm">
+                {{ shuffleMode ? shuffleViewed : activeIndex + 1 }} /
+                {{ flashcards.length }}
+              </div>
             </q-carousel-slide>
             <q-carousel-slide name="Edit">
               <div class="list-and-view q-gutter-md">
@@ -539,6 +541,20 @@
       </q-card-section>
     </q-card>
   </q-dialog>
+  <q-dialog v-model="showShuffleFinishDialog">
+    <q-card class="q-pa-md">
+      <q-card-section class="text-center text-h6 text-primary"> All cards viewed! </q-card-section>
+
+      <q-card-section class="text-body1 text-center">
+        You completed all cards in shuffle mode. Click Restart to shuffle again.
+      </q-card-section>
+
+      <q-card-actions align="center" class="q-gutter-md">
+        <q-btn color="primary" label="Restart" @click="restartShuffle" />
+        <q-btn flat color="negative" label="Close" v-close-popup />
+      </q-card-actions>
+    </q-card>
+  </q-dialog>
 </template>
 
 <script setup>
@@ -590,6 +606,12 @@ const selectedFile = ref({})
 const openPostDialog = ref(false)
 const showFrontUploader = ref(false)
 const showBackUploader = ref(false)
+const shuffleMode = ref(false)
+const swapMode = ref(false)
+const shuffleOrder = ref([]) // holds randomized card IDs
+const shuffleIndex = ref(0) // current progress in shuffled list
+const shuffleViewed = ref(0) // how many cards viewed
+const showShuffleFinishDialog = ref(false)
 const postEntryOptions = ref([
   { id: 1, label: 'Add More', slide: 'Create' },
   { id: 2, label: 'View flashcard', slide: 'View' },
@@ -875,6 +897,32 @@ function handleArrow(e) {
     speak()
   }
 }
+watch(shuffleMode, (val) => {
+  if (val) {
+    // Generate new shuffle order (IDs only)
+    shuffleOrder.value = flashcards.value.map((c) => c.id)
+
+    // Randomize order
+    for (let i = shuffleOrder.value.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1))
+      ;[shuffleOrder.value[i], shuffleOrder.value[j]] = [
+        shuffleOrder.value[j],
+        shuffleOrder.value[i],
+      ]
+    }
+
+    shuffleIndex.value = 0
+    shuffleViewed.value = 1
+
+    // Set first shuffled card as active
+    activeId.value = shuffleOrder.value[0]
+  } else {
+    // When turning off shuffle mode, reset normal behavior
+    shuffleOrder.value = []
+    shuffleIndex.value = 0
+    shuffleViewed.value = 0
+  }
+})
 
 watch(selectedIds, () => {
   if (selectedIds.value.length === filtered.value.length) {
@@ -1221,12 +1269,26 @@ const filtered = computed(() => {
 })
 
 const active = computed(() => {
-  store.getFlashcard()
-  const cardView =
+  const card =
     (flashcards.value && activeId.value && flashcards.value.find((c) => c.id === activeId.value)) ||
     flashcards.value[0]
-  return cardView || null
+
+  if (!card) return null
+
+  // Apply Swap Front/Back Mode
+  if (swapMode.value) {
+    return {
+      ...card,
+      frontText: card.backText,
+      backText: card.frontText,
+      frontImage: card.backImage,
+      backImage: card.frontImage,
+    }
+  }
+
+  return card
 })
+
 const activeIndex = computed(() => {
   return Math.max(
     0,
@@ -1248,29 +1310,65 @@ function flip() {
 
 function prevCard() {
   if (!flashcards.value.length) return
+
+  if (shuffleMode.value) {
+    if (shuffleIndex.value === 0) return // No negative move
+
+    shuffleIndex.value--
+    shuffleViewed.value = shuffleIndex.value + 1
+    activeId.value = shuffleOrder.value[shuffleIndex.value]
+    flipped.value = false
+    return
+  }
+
+  // Normal mode
   const idx = flashcards.value.findIndex((c) => c.id === activeId.value)
-  const nextIdx = idx <= 0 ? flashcards.value.length - 1 : idx - 1
-  activeId.value = flashcards.value[nextIdx].id
+  const prevIdx = idx <= 0 ? flashcards.value.length - 1 : idx - 1
+  activeId.value = flashcards.value[prevIdx].id
   flipped.value = false
 }
 
 function nextCard() {
   if (!flashcards.value.length) return
+
+  if (shuffleMode.value) {
+    // If at end → show Finish Dialog
+    if (shuffleIndex.value >= shuffleOrder.value.length - 1) {
+      showShuffleFinishDialog.value = true
+      return
+    }
+
+    shuffleIndex.value++
+    shuffleViewed.value = shuffleIndex.value + 1
+    activeId.value = shuffleOrder.value[shuffleIndex.value]
+    flipped.value = false
+    return
+  }
+
+  // Normal mode
   const idx = flashcards.value.findIndex((c) => c.id === activeId.value)
   const nextIdx = idx === -1 || idx >= flashcards.value.length - 1 ? 0 : idx + 1
   activeId.value = flashcards.value[nextIdx].id
   flipped.value = false
 }
+
+function restartShuffle() {
+  showShuffleFinishDialog.value = false
+
+  shuffleOrder.value = flashcards.value.map((c) => c.id)
+
+  for (let i = shuffleOrder.value.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1))
+    ;[shuffleOrder.value[i], shuffleOrder.value[j]] = [shuffleOrder.value[j], shuffleOrder.value[i]]
+  }
+
+  shuffleIndex.value = 0
+  shuffleViewed.value = 1
+  activeId.value = shuffleOrder.value[0]
+  flipped.value = false
+}
 </script>
 <style scoped>
-/* navigation buttons */
-.nav-buttons {
-  margin-bottom: 20px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
 /* Reduce flashcard height for mobile */
 .flashcard {
   width: 100%;
